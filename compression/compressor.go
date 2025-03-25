@@ -63,23 +63,23 @@ func permute(x []complex128) {
 }
 
 // low pass filter for []complex128
-func LowPassFilter(x []complex128, cutoff int) {
-	x = x[:cutoff]
+func LowPassFilter(x []complex128, cutoff int) []complex128 {
+	return x[:cutoff]
 }
 
 // high pass filter for []complex128
-func HighPassFilter(x []complex128, cutoff int) {
-	x = x[cutoff:]
+func HighPassFilter(x []complex128, cutoff int) []complex128 {
+	return x[cutoff:]
 }
 
 // band pass filter for []complex128
-func BandPassFilter(x []complex128, low, high int) {
-	x = x[low:high]
+func BandPassFilter(x []complex128, low, high int) []complex128 {
+	return x[low:high]
 }
 
 // band stop filter for []complex128
-func BandStopFilter(x []complex128, low, high int) {
-	x = append(x[:low], x[high:]...)
+func BandStopFilter(x []complex128, low, high int) []complex128 {
+	return append(x[:low], x[high:]...)
 }
 
 // hstack to float64 from complex128 of [][]complex128

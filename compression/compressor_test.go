@@ -60,6 +60,37 @@ func TestBatchFFT(t *testing.T) {
 	assert.LessOrEqual(t, mse, tolerance, "MSE is too high!")
 }
 
+// tests for filters by length
+func TestLowPassFilter(t *testing.T) {
+	var signal = []complex128{complex(1, 0), complex(2, 0), complex(3, 0), complex(4, 0)}
+	var cutoff = 2
+	var expected = []complex128{complex(1, 0), complex(2, 0)}
+	assert.Equal(t, LowPassFilter(signal, cutoff), expected)
+}
+
+func TestHighPassFilter(t *testing.T) {
+	var signal = []complex128{complex(1, 0), complex(2, 0), complex(3, 0), complex(4, 0)}
+	var cutoff = 2
+	var expected = []complex128{complex(3, 0), complex(4, 0)}
+	assert.Equal(t, HighPassFilter(signal, cutoff), expected)
+}
+
+func TestBandPassFilter(t *testing.T) {
+	var signal = []complex128{complex(1, 0), complex(2, 0), complex(3, 0), complex(4, 0)}
+	var low = 1
+	var high = 3
+	var expected = []complex128{complex(2, 0), complex(3, 0)}
+	assert.Equal(t, BandPassFilter(signal, low, high), expected)
+}
+
+func TestBandStopFilter(t *testing.T) {
+	var signal = []complex128{complex(1, 0), complex(2, 0), complex(3, 0), complex(4, 0)}
+	var low = 1
+	var high = 3
+	var expected = []complex128{complex(1, 0), complex(4, 0)}
+	assert.Equal(t, BandStopFilter(signal, low, high), expected)
+}
+
 func BenchmarkBatchFFT(b *testing.B) {
 	var rows int = 1_000_0
 	var feats int = 1024
