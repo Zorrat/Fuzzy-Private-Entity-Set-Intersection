@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"testing"
 	"time"
+	"log"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -60,15 +61,34 @@ func TestBatchFFT(t *testing.T) {
 	assert.LessOrEqual(t, mse, tolerance, "MSE is too high!")
 }
 
-func BenchmarkFFT(b *testing.B) {
+func BenchmarkBatchFFT(b *testing.B) {
 	runtime.GOMAXPROCS(runtime.NumCPU() - 2) // to not forkbomb the system
-	var rows int = 1_000_00
+	var rows int = 1_000
 	var feats int = 1024
 	signal := generateSparseSignal(rows, feats, 0.01)
 
 	for i := 0; i < b.N; i++ {
 		start := time.Now()
 		BatchFFT(signal)
+		elapsed := time.Since(start)
+		b.Logf("Batch FFT took: %v", elapsed)
+	}
+}
+
+func BenchmarkPlainFFT(b *testing.B) {
+	runtime.GOMAXPROCS(runtime.NumCPU() - 2) // to not forkbomb the system
+	var rows int = 1_000
+	var feats int = 1024
+	signal := generateSparseSignal(rows, feats, 0.01)
+
+	for i := 0; i < b.N; i++ {
+		start := time.Now()
+		for i := range signal {
+			err := fft(signal[i])
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
 		elapsed := time.Since(start)
 		b.Logf("Batch FFT took: %v", elapsed)
 	}

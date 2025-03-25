@@ -1,0 +1,37 @@
+?   	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git	[no test files]
+goos: linux
+goarch: amd64
+pkg: github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/compression
+cpu: AMD EPYC 7763 64-Core Processor                
+BenchmarkBatchFFT-2   	      96	  12920996 ns/op	  236008 B/op	    2022 allocs/op
+--- BENCH: BenchmarkBatchFFT-2
+    compressor_test.go:74: Batch FFT took: 12.036158ms
+    compressor_test.go:74: Batch FFT took: 11.981005ms
+    compressor_test.go:74: Batch FFT took: 11.608477ms
+    compressor_test.go:74: Batch FFT took: 11.602894ms
+    compressor_test.go:74: Batch FFT took: 12.461454ms
+    compressor_test.go:74: Batch FFT took: 11.725619ms
+    compressor_test.go:74: Batch FFT took: 11.592484ms
+    compressor_test.go:74: Batch FFT took: 11.598025ms
+    compressor_test.go:74: Batch FFT took: 12.823189ms
+    compressor_test.go:74: Batch FFT took: 12.658215ms
+	... [output truncated]
+BenchmarkPlainFFT-2   	      66	  15711970 ns/op	  249699 B/op	      26 allocs/op
+--- BENCH: BenchmarkPlainFFT-2
+    compressor_test.go:93: Batch FFT took: 15.168999ms
+    compressor_test.go:93: Batch FFT took: 15.997081ms
+    compressor_test.go:93: Batch FFT took: 25.130333ms
+    compressor_test.go:93: Batch FFT took: 17.861306ms
+    compressor_test.go:93: Batch FFT took: 16.673548ms
+    compressor_test.go:93: Batch FFT took: 16.626286ms
+    compressor_test.go:93: Batch FFT took: 16.916191ms
+    compressor_test.go:93: Batch FFT took: 15.281532ms
+    compressor_test.go:93: Batch FFT took: 14.799387ms
+    compressor_test.go:93: Batch FFT took: 14.500466ms
+	... [output truncated]
+PASS
+ok  	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/compression	3.234s
+?   	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/data	[no test files]
+?   	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/encryption	[no test files]
+?   	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/examples	[no test files]
+?   	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/serialization	[no test files]
