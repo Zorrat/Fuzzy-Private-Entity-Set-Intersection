@@ -1,4 +1,4 @@
-package fpsi
+package compression
 
 import (
 	"log"
