@@ -1,4 +1,4 @@
-package fpsi
+package data
 
 import (
 	"math"

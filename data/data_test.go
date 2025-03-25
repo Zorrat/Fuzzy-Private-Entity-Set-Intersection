@@ -1,4 +1,4 @@
-package fpsi
+package data
 
 import (
 	"fmt"
@@ -7,6 +7,114 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	// Mock suffix standards for testing
+	suffixStandards = map[string][]string{
+		"inc": {"incorporated", "incorp", "inc"},
+		"llc": {"limited liability company", "l l c"},
+	}
+}
+
+
+func TestCleanCompanyName(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "normalize unicode",
+			input:    "Café Inc.",
+			expected: "cafe inc",
+		},
+		{
+			name:     "remove punctuation",
+			input:    "A.B.C. Inc.",
+			expected: "abc inc",
+		},
+		{
+			name:     "replace suffixes",
+			input:    "Foo Incorporated",
+			expected: "foo inc",
+		},
+		{
+			name:     "combined cleaning",
+			input:    "Bär & Hönig L.L.C.",
+			expected: "bar honig llc",
+		},
+		{
+			name:     "combined cleaning",
+			input:    "Bär & Hönig l.L.C.",
+			expected: "bar honig llc",
+		},
+		{
+			name:     "combined cleaning",
+			input:    "Bär-Hönig L.L.C.",
+			expected: "barhonig llc",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := CleanCompanyName(tt.input)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestNormalizeString(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"Café", "cafe"},
+		{"Hönig", "honig"},
+		{"Straße", "strasse"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			result := normalizeString(tt.input)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestRemovePunctuation(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"A.B.C.", "abc"},
+		{"Foo & Bar", "foo  bar"},
+		{"Test-Company", "testcompany"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			result := removePunctuation(tt.input)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestReplaceSuffixes(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"Foo Incorporated", "foo inc"},
+		{"Bar Incorp", "bar inc"},
+		{"Baz L L C", "baz llc"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			result := replaceSuffixes(tt.input)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
 
 func TestJsonLoader(t *testing.T) {
 	names,err := load_names("names_train.json")
