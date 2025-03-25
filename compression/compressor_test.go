@@ -3,11 +3,10 @@ package fpsi
 import (
 	"math"
 	"math/rand"
-	"runtime"
 	"testing"
 	"time"
-	"log"
 
+	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,7 +47,7 @@ func TestBatchFFT(t *testing.T) {
 		FT_signal[i] = make([]complex128, feats)
 		FT_signal[i] = FT(signal[i])
 	}
-	BatchFFT(signal)
+	utils.BatchApply(signal, fft)
 	var mse float64
 	for i := 0; i < rows; i++ {
 		for j := 0; j < feats; j++ {
@@ -62,32 +61,27 @@ func TestBatchFFT(t *testing.T) {
 }
 
 func BenchmarkBatchFFT(b *testing.B) {
-	runtime.GOMAXPROCS(runtime.NumCPU() - 2) // to not forkbomb the system
-	var rows int = 1_000
+	var rows int = 1_000_0
 	var feats int = 1024
 	signal := generateSparseSignal(rows, feats, 0.01)
 
 	for i := 0; i < b.N; i++ {
 		start := time.Now()
-		BatchFFT(signal)
+		utils.BatchApply(signal, fft)
 		elapsed := time.Since(start)
 		b.Logf("Batch FFT took: %v", elapsed)
 	}
 }
 
 func BenchmarkPlainFFT(b *testing.B) {
-	runtime.GOMAXPROCS(runtime.NumCPU() - 2) // to not forkbomb the system
-	var rows int = 1_000
+	var rows int = 1_000_0
 	var feats int = 1024
 	signal := generateSparseSignal(rows, feats, 0.01)
 
 	for i := 0; i < b.N; i++ {
 		start := time.Now()
 		for i := range signal {
-			err := fft(signal[i])
-			if err != nil {
-				log.Fatal(err)
-			}
+			fft(signal[i])
 		}
 		elapsed := time.Since(start)
 		b.Logf("Batch FFT took: %v", elapsed)

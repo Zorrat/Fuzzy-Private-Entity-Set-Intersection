@@ -1,34 +1,19 @@
 package fpsi
 
 import (
-	"errors"
 	"log"
 	"math/bits"
 	"math/cmplx"
-	"sync"
 )
 
-func BatchFFT(x [][]complex128) {
-	var wg sync.WaitGroup
-	for i := range x {
-		wg.Add(1)
-		go func(signal []complex128) {
-			defer wg.Done()
-			err := fft(signal)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}(x[i])
-	}
-	wg.Wait()
-}
-
-// note only works when len(x) is power of 2
 // inplace FFT to save ram
-func fft(x []complex128) error {
+//   - warning: this function will clear the memory of x
+//   - note: only works when len(x) is power of 2
+func fft(x []complex128) {
 	N := len(x)
 	if N&(N-1) != 0 {
-		return errors.New("fft: length of input must be a power of 2")
+		log.Fatal("Length of input vector must be a power of 2")
+		return
 	}
 	permute(x)
 	// Butterfly
@@ -51,12 +36,12 @@ func fft(x []complex128) error {
 			}
 		}
 	}
-	// no error
-	return nil
 }
 
 // permutate permutes the input vector using bit reversal.
-// Uses an in-place algorithm that runs in O(N) time and O(1) additional space.
+//
+// Uses an in-place algorithm that runs in O(N) time and O(1)
+// additional space.
 func permute(x []complex128) {
 	N := len(x)
 	shift := 64 - uint64(bits.Len64(uint64(N-1)))
@@ -75,4 +60,63 @@ func permute(x []complex128) {
 			x[i+1], x[ind] = x[ind], x[i+1]
 		}
 	}
+}
+
+// low pass filter for []complex128
+func LowPassFilter(x []complex128, cutoff int) {
+	x = x[:cutoff]
+}
+
+// high pass filter for []complex128
+func HighPassFilter(x []complex128, cutoff int) {
+	x = x[cutoff:]
+}
+
+// band pass filter for []complex128
+func BandPassFilter(x []complex128, low, high int) {
+	x = x[low:high]
+}
+
+// band stop filter for []complex128
+func BandStopFilter(x []complex128, low, high int) {
+	x = append(x[:low], x[high:]...)
+}
+
+// hstack to float64 from complex128 of [][]complex128
+//
+// warning: this function will clear the memory of x
+func ToFloat64(x [][]complex128) [][]float64 {
+
+	N := len(x)
+	M := len(x[0])
+	res := make([][]float64, N)
+	for i := range res {
+		res[i] = make([]float64, 2*M)
+		for j := range x[i] {
+			res[i][2*j] = real(x[i][j])
+			res[i][2*j+1] = imag(x[i][j])
+		}
+		// clear memory
+		x[i] = nil
+	}
+
+	return res
+}
+
+// use [][]float64 as real part to convert to [][]complex128
+//
+// warning: this function will clear the memory of x
+func FromFloat64(x [][]float64) [][]complex128 {
+	N := len(x)
+	M := len(x[0]) / 2
+	res := make([][]complex128, N)
+	for i := range res {
+		res[i] = make([]complex128, M)
+		for j := range res[i] {
+			res[i][j] = complex(x[i][2*j], x[i][2*j+1])
+		}
+		// clear memory
+		x[i] = nil
+	}
+	return res
 }
