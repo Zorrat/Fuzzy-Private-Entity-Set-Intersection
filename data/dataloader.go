@@ -9,16 +9,18 @@ import (
 
 // LoadNames loads names from names_train.json into a string slice
 
+type Loader struct {
+	basePath string
+}
+
+// NewLoader creates a new Loader instance
+func NewLoader(basePath string) *Loader {
+	return &Loader{basePath: basePath}
+}
 
 
-func _load_json_file(fileName string) ([]string, error) {
-	basePath, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
+func _load_json_file(path string) ([]string, error) {
 
-	path := filepath.Join(basePath, fileName)
-	
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -33,14 +35,8 @@ func _load_json_file(fileName string) ([]string, error) {
 	return names, nil
 }
 
-func _load_txt_file(fileName string) ([]string, error) {
-	basePath, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	path := filepath.Join(basePath, fileName)
-
+func _load_txt_file(path string) ([]string, error) {
+	
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -61,8 +57,9 @@ func _load_txt_file(fileName string) ([]string, error) {
 }
 
 
-func load_names(filePath string) ([]string, error) {
+func (l *Loader) load_names(fileName string) ([]string, error) {
 	// if path ends in .json, load json file
+	filePath := filepath.Join(l.basePath, fileName) 
 	if filepath.Ext(filePath) == ".json" {
 		return _load_json_file(filePath)
 	} else {
