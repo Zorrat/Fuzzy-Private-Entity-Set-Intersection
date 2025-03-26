@@ -1,13 +1,12 @@
-package fpsi
+package compression
 
 import (
 	"math"
 	"math/rand"
-	"runtime"
 	"testing"
 	"time"
-	"log"
 
+	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,7 +47,7 @@ func TestBatchFFT(t *testing.T) {
 		FT_signal[i] = make([]complex128, feats)
 		FT_signal[i] = FT(signal[i])
 	}
-	BatchFFT(signal)
+	utils.BatchApply(signal, fft)
 	var mse float64
 	for i := 0; i < rows; i++ {
 		for j := 0; j < feats; j++ {
@@ -61,33 +60,59 @@ func TestBatchFFT(t *testing.T) {
 	assert.LessOrEqual(t, mse, tolerance, "MSE is too high!")
 }
 
+// tests for filters by length
+func TestLowPassFilter(t *testing.T) {
+	var signal = []complex128{complex(1, 0), complex(2, 0), complex(3, 0), complex(4, 0)}
+	var cutoff = 2
+	var expected = []complex128{complex(1, 0), complex(2, 0)}
+	assert.Equal(t, LowPassFilter(signal, cutoff), expected)
+}
+
+func TestHighPassFilter(t *testing.T) {
+	var signal = []complex128{complex(1, 0), complex(2, 0), complex(3, 0), complex(4, 0)}
+	var cutoff = 2
+	var expected = []complex128{complex(3, 0), complex(4, 0)}
+	assert.Equal(t, HighPassFilter(signal, cutoff), expected)
+}
+
+func TestBandPassFilter(t *testing.T) {
+	var signal = []complex128{complex(1, 0), complex(2, 0), complex(3, 0), complex(4, 0)}
+	var low = 1
+	var high = 3
+	var expected = []complex128{complex(2, 0), complex(3, 0)}
+	assert.Equal(t, BandPassFilter(signal, low, high), expected)
+}
+
+func TestBandStopFilter(t *testing.T) {
+	var signal = []complex128{complex(1, 0), complex(2, 0), complex(3, 0), complex(4, 0)}
+	var low = 1
+	var high = 3
+	var expected = []complex128{complex(1, 0), complex(4, 0)}
+	assert.Equal(t, BandStopFilter(signal, low, high), expected)
+}
+
 func BenchmarkBatchFFT(b *testing.B) {
-	runtime.GOMAXPROCS(runtime.NumCPU() - 2) // to not forkbomb the system
-	var rows int = 1_000
+	var rows int = 1_000_0
 	var feats int = 1024
 	signal := generateSparseSignal(rows, feats, 0.01)
 
 	for i := 0; i < b.N; i++ {
 		start := time.Now()
-		BatchFFT(signal)
+		utils.BatchApply(signal, fft)
 		elapsed := time.Since(start)
 		b.Logf("Batch FFT took: %v", elapsed)
 	}
 }
 
 func BenchmarkPlainFFT(b *testing.B) {
-	runtime.GOMAXPROCS(runtime.NumCPU() - 2) // to not forkbomb the system
-	var rows int = 1_000
+	var rows int = 1_000_0
 	var feats int = 1024
 	signal := generateSparseSignal(rows, feats, 0.01)
 
 	for i := 0; i < b.N; i++ {
 		start := time.Now()
 		for i := range signal {
-			err := fft(signal[i])
-			if err != nil {
-				log.Fatal(err)
-			}
+			fft(signal[i])
 		}
 		elapsed := time.Since(start)
 		b.Logf("Batch FFT took: %v", elapsed)

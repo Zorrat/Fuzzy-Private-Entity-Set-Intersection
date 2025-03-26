@@ -4,5 +4,5 @@ Entity matching in a secure multiparty compute environment with threshold decryp
 To run all tests and benchmarks run this from the root directory
 
 ```{bash}
-go test ./... -bench=. -run=xxx -benchmem > tests.txt
+go test ./... -bench=. -run=.  -v -benchmem > tests.txt
 ```

@@ -1,37 +1,65 @@
 ?   	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git	[no test files]
+=== RUN   TestComputeCentroid
+--- PASS: TestComputeCentroid (0.00s)
+=== RUN   TestCluster
+--- PASS: TestCluster (0.00s)
+=== RUN   TestToVector
+--- PASS: TestToVector (0.00s)
+PASS
+ok  	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/clustering	0.004s
+=== RUN   TestBatchFFT
+--- PASS: TestBatchFFT (0.05s)
+=== RUN   TestLowPassFilter
+--- PASS: TestLowPassFilter (0.00s)
+=== RUN   TestHighPassFilter
+--- PASS: TestHighPassFilter (0.00s)
+=== RUN   TestBandPassFilter
+--- PASS: TestBandPassFilter (0.00s)
+=== RUN   TestBandStopFilter
+--- PASS: TestBandStopFilter (0.00s)
 goos: linux
 goarch: amd64
 pkg: github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/compression
 cpu: AMD EPYC 7763 64-Core Processor                
-BenchmarkBatchFFT-2   	      96	  12920996 ns/op	  236008 B/op	    2022 allocs/op
---- BENCH: BenchmarkBatchFFT-2
-    compressor_test.go:74: Batch FFT took: 12.036158ms
-    compressor_test.go:74: Batch FFT took: 11.981005ms
-    compressor_test.go:74: Batch FFT took: 11.608477ms
-    compressor_test.go:74: Batch FFT took: 11.602894ms
-    compressor_test.go:74: Batch FFT took: 12.461454ms
-    compressor_test.go:74: Batch FFT took: 11.725619ms
-    compressor_test.go:74: Batch FFT took: 11.592484ms
-    compressor_test.go:74: Batch FFT took: 11.598025ms
-    compressor_test.go:74: Batch FFT took: 12.823189ms
-    compressor_test.go:74: Batch FFT took: 12.658215ms
-	... [output truncated]
-BenchmarkPlainFFT-2   	      66	  15711970 ns/op	  249699 B/op	      26 allocs/op
---- BENCH: BenchmarkPlainFFT-2
-    compressor_test.go:93: Batch FFT took: 15.168999ms
-    compressor_test.go:93: Batch FFT took: 15.997081ms
-    compressor_test.go:93: Batch FFT took: 25.130333ms
-    compressor_test.go:93: Batch FFT took: 17.861306ms
-    compressor_test.go:93: Batch FFT took: 16.673548ms
-    compressor_test.go:93: Batch FFT took: 16.626286ms
-    compressor_test.go:93: Batch FFT took: 16.916191ms
-    compressor_test.go:93: Batch FFT took: 15.281532ms
-    compressor_test.go:93: Batch FFT took: 14.799387ms
-    compressor_test.go:93: Batch FFT took: 14.500466ms
-	... [output truncated]
+BenchmarkBatchFFT
+    compressor_test.go:103: Batch FFT took: 178.717861ms
+    compressor_test.go:103: Batch FFT took: 154.389571ms
+    compressor_test.go:103: Batch FFT took: 127.751945ms
+    compressor_test.go:103: Batch FFT took: 126.697576ms
+    compressor_test.go:103: Batch FFT took: 132.651781ms
+    compressor_test.go:103: Batch FFT took: 139.115222ms
+    compressor_test.go:103: Batch FFT took: 132.307195ms
+    compressor_test.go:103: Batch FFT took: 135.019274ms
+    compressor_test.go:103: Batch FFT took: 132.896778ms
+    compressor_test.go:103: Batch FFT took: 193.660666ms
+    compressor_test.go:103: Batch FFT took: 133.781216ms
+    compressor_test.go:103: Batch FFT took: 135.050169ms
+BenchmarkBatchFFT-2   	       7	 148572467 ns/op	24161900 B/op	   21444 allocs/op
+BenchmarkPlainFFT
+    compressor_test.go:118: Batch FFT took: 181.220875ms
+    compressor_test.go:118: Batch FFT took: 204.156533ms
+    compressor_test.go:118: Batch FFT took: 181.082417ms
+    compressor_test.go:118: Batch FFT took: 179.713381ms
+    compressor_test.go:118: Batch FFT took: 180.190123ms
+    compressor_test.go:118: Batch FFT took: 179.485359ms
+    compressor_test.go:118: Batch FFT took: 177.821755ms
+    compressor_test.go:118: Batch FFT took: 182.661495ms
+    compressor_test.go:118: Batch FFT took: 177.106006ms
+    compressor_test.go:118: Batch FFT took: 180.50847ms
+    compressor_test.go:118: Batch FFT took: 177.012499ms
+BenchmarkPlainFFT-2   	       6	 186828043 ns/op	27348729 B/op	    1682 allocs/op
 PASS
-ok  	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/compression	3.234s
-?   	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/data	[no test files]
-?   	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/encryption	[no test files]
+ok  	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/compression	4.090s
+=== RUN   TestLoader
+--- PASS: TestLoader (0.00s)
+PASS
+ok  	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/data	0.004s
+PASS
+ok  	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/encryption	0.002s
 ?   	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/examples	[no test files]
-?   	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/serialization	[no test files]
+PASS
+ok  	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/serialization	0.002s
+=== RUN   TestCosineDistance
+--- PASS: TestCosineDistance (0.00s)
+PASS
+ok  	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/utils	0.004s
