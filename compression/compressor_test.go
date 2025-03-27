@@ -2,28 +2,12 @@ package compression
 
 import (
 	"math"
-	"math/rand"
 	"testing"
 	"time"
 
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/utils"
 	"github.com/stretchr/testify/assert"
 )
-
-func generateSparseSignal(rows int, feats int, sparsity float64) [][]complex128 {
-	signal := make([][]complex128, rows)
-	for i := 0; i < rows; i++ {
-		signal[i] = make([]complex128, feats)
-	}
-	numNonZero := int(float64(rows) * float64(feats) * sparsity)
-	for i := 0; i < numNonZero; i++ {
-		row_idx := rand.Intn(rows)
-		feat_idx := rand.Intn(feats)
-		val := rand.Float64()
-		signal[row_idx][feat_idx] = complex(val, 0)
-	}
-	return signal
-}
 
 func FT(x []complex128) []complex128 {
 	N := len(x)
@@ -41,13 +25,13 @@ func FT(x []complex128) []complex128 {
 func TestBatchFFT(t *testing.T) {
 	var rows = 128
 	var feats = 128
-	signal := generateSparseSignal(rows, feats, 0.01)
+	signal := utils.GenerateSparseSignal(rows, feats, 0.01)
 	FT_signal := make([][]complex128, rows)
 	for i := 0; i < rows; i++ {
 		FT_signal[i] = make([]complex128, feats)
 		FT_signal[i] = FT(signal[i])
 	}
-	utils.BatchApply(signal, fft)
+	utils.BatchApply(signal, FFT)
 	var mse float64
 	for i := 0; i < rows; i++ {
 		for j := 0; j < feats; j++ {
@@ -94,11 +78,11 @@ func TestBandStopFilter(t *testing.T) {
 func BenchmarkBatchFFT(b *testing.B) {
 	var rows int = 1_000_0
 	var feats int = 1024
-	signal := generateSparseSignal(rows, feats, 0.01)
+	signal := utils.GenerateSparseSignal(rows, feats, 0.01)
 
 	for i := 0; i < b.N; i++ {
 		start := time.Now()
-		utils.BatchApply(signal, fft)
+		utils.BatchApply(signal, FFT)
 		elapsed := time.Since(start)
 		b.Logf("Batch FFT took: %v", elapsed)
 	}
@@ -107,12 +91,12 @@ func BenchmarkBatchFFT(b *testing.B) {
 func BenchmarkPlainFFT(b *testing.B) {
 	var rows int = 1_000_0
 	var feats int = 1024
-	signal := generateSparseSignal(rows, feats, 0.01)
+	signal := utils.GenerateSparseSignal(rows, feats, 0.01)
 
 	for i := 0; i < b.N; i++ {
 		start := time.Now()
 		for i := range signal {
-			fft(signal[i])
+			FFT(signal[i])
 		}
 		elapsed := time.Since(start)
 		b.Logf("Batch FFT took: %v", elapsed)
