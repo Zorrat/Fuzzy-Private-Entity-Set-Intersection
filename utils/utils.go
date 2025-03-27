@@ -2,17 +2,23 @@ package utils
 
 import (
 	"math"
+	"math/rand"
+	"reflect"
 	"sync"
 )
 
-// Batch apply a function to a slice of complex128
-func BatchApply(x [][]complex128, f func([]complex128)) {
+func BatchApply[T any](x []T, f interface{}, extras ...interface{}) {
 	var wg sync.WaitGroup
+	funcValue := reflect.ValueOf(f)
 	for i := range x {
 		wg.Add(1)
-		go func(signal []complex128) {
+		go func(item T) {
 			defer wg.Done()
-			f(signal)
+			args := []reflect.Value{reflect.ValueOf(item)}
+			for _, extra := range extras {
+				args = append(args, reflect.ValueOf(extra))
+			}
+			funcValue.Call(args)
 		}(x[i])
 	}
 	wg.Wait()
@@ -38,4 +44,19 @@ func AverageCosineDistance(vector []float64, vectors [][]float64) float64 {
 		totalSimilarity += CosineDistance(vector, vectors[j])
 	}
 	return totalSimilarity / float64(len(vectors))
+}
+
+func GenerateSparseSignal(rows int, feats int, sparsity float64) [][]complex128 {
+	signal := make([][]complex128, rows)
+	for i := 0; i < rows; i++ {
+		signal[i] = make([]complex128, feats)
+	}
+	numNonZero := int(float64(rows) * float64(feats) * sparsity)
+	for i := 0; i < numNonZero; i++ {
+		row_idx := rand.Intn(rows)
+		feat_idx := rand.Intn(feats)
+		val := rand.Float64()
+		signal[row_idx][feat_idx] = complex(val, 0)
+	}
+	return signal
 }
