@@ -28,20 +28,34 @@ func computeCentroid(vectors [][]float64) []float64 {
 	return bestCandidate
 }
 
-// K-Means clustering (without structs)
-func Cluster(vectors [][]float64, k, iterations int) [][]float64 {
+// K-Means clustering (ensures each cluster contains exactly K vectors)
+func Cluster(vectors [][]float64, iterations int) [][]float64 {
 	n := len(vectors)
+	k := int(math.Sqrt(float64(n)))
+	
 
-	// Initialize centroids randomly
+	// Ensure that N is divisible by K
+	if n%k != 0 {
+		panic("The number of vectors must be divisible by K")
+	}
+
+	// Initialize centroids randomly (can be optimized with K-means++)
 	centroids := make([][]float64, k)
 	for i := range centroids {
 		centroids[i] = vectors[rand.Intn(n)]
 	}
+
+	// Create the initial empty clusters
 	clusters := make([][][]float64, k)
+
 	for iter := 0; iter < iterations; iter++ {
-		// Assign vectors to closest centroid
+		// Reset clusters for this iteration
 		clusters = make([][][]float64, k)
+		clusterSizes := make([]int, k) // Track the number of vectors in each cluster
+
+		// Assign vectors to the closest centroid
 		for _, vec := range vectors {
+			// Find the nearest centroid
 			minDist, bestCluster := math.MaxFloat64, 0
 			for j, cent := range centroids {
 				dist := utils.CosineDistance(vec, cent)
@@ -50,14 +64,32 @@ func Cluster(vectors [][]float64, k, iterations int) [][]float64 {
 					bestCluster = j
 				}
 			}
-			clusters[bestCluster] = append(clusters[bestCluster], vec)
+
+			// If the chosen cluster has less than K vectors, assign the vector
+			if clusterSizes[bestCluster] < k {
+				clusters[bestCluster] = append(clusters[bestCluster], vec)
+				clusterSizes[bestCluster]++
+			} else {
+				// If the cluster already has K vectors, find the next best cluster
+				// and assign the vector there.
+				for i := 0; i < k; i++ {
+					if clusterSizes[i] < k {
+						clusters[i] = append(clusters[i], vec)
+						clusterSizes[i]++
+						break
+					}
+				}
+			}
 		}
 
-		// Update centroids
+		// Update centroids (compute centroid for non-empty clusters)
 		for i := range centroids {
-			centroids[i] = computeCentroid(clusters[i])
+			if len(clusters[i]) > 0 {
+				centroids[i] = computeCentroid(clusters[i])
+			}
 		}
 	}
+
 	return ToVector(centroids, k, clusters, true)
 }
 

@@ -23,11 +23,13 @@ func TestCluster(t *testing.T) {
 		{0.9, 0.1},
 		{0.2, 0.8},
 		{0.7, 0.7},
+		{0.5, 0.5},
+		{0.3, 0.3},
+		{0.1, 0.1},
+		{0.6, 0.6},
 	}
-	k := 2
-	iterations := 10
-
-	clusters := Cluster(vectors, k, iterations)
+	iterations := 100
+	clusters := Cluster(vectors, iterations)
 	assert.Equal(t, len(vectors), len(clusters), "Number of output vectors should match input")
 }
 
