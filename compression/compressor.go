@@ -9,7 +9,7 @@ import (
 // inplace FFT to save ram
 //   - warning: this function will clear the memory of x
 //   - note: only works when len(x) is power of 2
-func fft(x []complex128) {
+func FFT(x []complex128) {
 	N := len(x)
 	if N&(N-1) != 0 {
 		log.Fatal("Length of input vector must be a power of 2")
