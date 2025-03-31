@@ -148,7 +148,7 @@ func TestVectorizer(t *testing.T) {
 	
 	v := NewTfidfVectorizer(2, 1)
 	tfidfMatrix := v.FitTransform(names)
-	fmt.Println(len(tfidfMatrix))
+	fmt.Println(len(tfidfMatrix[0]))
 	assert.Equal(t, len(names), len(tfidfMatrix), "Expected 8000 names")
 
 }
