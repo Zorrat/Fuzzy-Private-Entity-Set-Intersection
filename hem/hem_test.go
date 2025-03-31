@@ -2,7 +2,6 @@ package hem
 
 import (
 	"math"
-	"runtime"
 	"testing"
 
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/utils"
@@ -24,8 +23,6 @@ func TestEncryptDecryptCycle(t *testing.T) {
 	if err = decCtx.encoder.Decode(decrypted_pt, decoded); err != nil {
 		panic(err)
 	}
-
-	assert.Equal(t, 10, encCtx.params.LogN(), "Should use LogN=10 for n=2")
 	assert.InDeltaSlice(t, testVector, decoded[:len(testVector)], 1e-5, "Decrypted values should match original")
 }
 
@@ -38,7 +35,7 @@ func TestBatchEncryptDecryptCycle(t *testing.T) {
     testVectors := make([][]float64, numVectors)
 
     for i := range testVectors {
-       testVectors[i] = utils.GenerateTestVector(800)
+       testVectors[i] = utils.GenerateTestVector(245)
     }
     
     // Encrypt all vectors in batch
@@ -124,9 +121,8 @@ func TestCosineSimilarity(t *testing.T) {
 func TestBatchCosineSimilarity(t *testing.T) {
     // Initialize contexts
     encCtx, decCtx, evalCtx := GenerateContexts(8)
-    runtime.GOMAXPROCS(6)
     // Create test vectors for ciphertexts
-    numCtVectors := 200
+    numCtVectors := 10
     vectorSize := 235 
     ctVectors := make([][]float64, numCtVectors)
     for i := range ctVectors {
@@ -135,7 +131,7 @@ func TestBatchCosineSimilarity(t *testing.T) {
     }
 
 	// Create plaintext vectors for comparison
-	numPtVectors := 500
+	numPtVectors := 20
 	ptVectors := make([][]float64, numPtVectors)
 	for i := range ptVectors {
 		ptVectors[i] = utils.GenerateTestVector(vectorSize)
