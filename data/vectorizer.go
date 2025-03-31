@@ -5,24 +5,91 @@ import (
 	"regexp"
 )
 
+// OrderedMap maintains both a map for fast lookups and a slice for order preservation
+type OrderedMap struct {
+	Map   map[string]int
+	Keys  []string
+	Count int
+}
 
+// NewOrderedMap creates a new OrderedMap
+func NewOrderedMap() *OrderedMap {
+	return &OrderedMap{
+		Map:   make(map[string]int),
+		Keys:  []string{},
+		Count: 0,
+	}
+}
+
+// Set adds a key to the OrderedMap if it doesn't exist
+func (om *OrderedMap) Set(key string) int {
+	if idx, exists := om.Map[key]; exists {
+		return idx
+	}
+
+	// Add new key
+	om.Map[key] = om.Count
+	om.Keys = append(om.Keys, key)
+	om.Count++
+	return om.Count - 1
+}
+
+// Get returns the index of a key
+func (om *OrderedMap) Get(key string) (int, bool) {
+	idx, exists := om.Map[key]
+	return idx, exists
+}
+
+// Delete removes a key from the OrderedMap
+func (om *OrderedMap) Delete(key string) {
+	if _, exists := om.Map[key]; !exists {
+		return
+	}
+
+	// Find and remove from Keys slice
+	for i, k := range om.Keys {
+		if k == key {
+			om.Keys = append(om.Keys[:i], om.Keys[i+1:]...)
+			break
+		}
+	}
+
+	// Remove from map
+	delete(om.Map, key)
+
+	// Rebuild indices to maintain consistency
+	om.Count = 0
+	for _, k := range om.Keys {
+		om.Map[k] = om.Count
+		om.Count++
+	}
+}
+
+// Size returns the number of elements in the OrderedMap
+func (om *OrderedMap) Size() int {
+	return om.Count
+}
+
+// TfidfVectorizer implements TF-IDF feature extraction
 type TfidfVectorizer struct {
-	Vocabulary  map[string]int
+	Vocabulary  *OrderedMap
 	NgramFunc   func(string, int) []string
 	NgramLength int
 	MinDF       int
 }
 
-func NewTfidfVectorizer( ngramLength, minDF int) *TfidfVectorizer {
+// NewTfidfVectorizer creates a new TF-IDF vectorizer
+func NewTfidfVectorizer(ngramLength, minDF int) *TfidfVectorizer {
 	return &TfidfVectorizer{
-		Vocabulary:  make(map[string]int),
+		Vocabulary:  NewOrderedMap(),
 		NgramFunc:   CalculateNGrams,
 		NgramLength: ngramLength,
 		MinDF:       minDF,
 	}
 }
 
-func (v *TfidfVectorizer) FitTransform(data []string) [][]float64 {
+// Fit builds the vocabulary from training data
+func (v *TfidfVectorizer) Fit(data []string) {
 	// Build vocabulary
 	documentFreq := make(map[string]int)
 	for _, text := range data {
@@ -31,20 +98,23 @@ func (v *TfidfVectorizer) FitTransform(data []string) [][]float64 {
 			uniqueNgrams[ngram] = true
 		}
 		for ngram := range uniqueNgrams {
-			if _, ok := v.Vocabulary[ngram]; !ok {
-				v.Vocabulary[ngram] = len(v.Vocabulary)
-				documentFreq[ngram]++
-			}
+			v.Vocabulary.Set(ngram)
+			documentFreq[ngram]++
 		}
 	}
 
-	// Filter terms based on min_df
-	for ngram, freq := range documentFreq {
-		if freq < v.MinDF {
-			delete(v.Vocabulary, ngram)
+	// Filter terms based on min_df and rebuild vocabulary
+	tempVocab := NewOrderedMap()
+	for _, ngram := range v.Vocabulary.Keys {
+		if documentFreq[ngram] >= v.MinDF {
+			tempVocab.Set(ngram)
 		}
 	}
+	v.Vocabulary = tempVocab
+}
 
+// BatchTransform converts a batch of text into TF-IDF vectors
+func (v *TfidfVectorizer) BatchTransform(data []string) [][]float64 {
 	// Create TF-IDF matrix
 	tfidfMatrix := make([][]float64, len(data))
 	for i, text := range data {
@@ -54,27 +124,24 @@ func (v *TfidfVectorizer) FitTransform(data []string) [][]float64 {
 	return tfidfMatrix
 }
 
+// Transform converts a single text into a TF-IDF vector
 func (v *TfidfVectorizer) Transform(text string) []float64 {
-	ngrams := v.NgramFunc(text, v.NgramLength) // Adjust n-gram length as needed
-	tfidfVector := make([]float64, len(v.Vocabulary))
-	maxFrequency := 0
+	ngrams := v.NgramFunc(text, v.NgramLength)
+	tfidfVector := make([]float64, v.Vocabulary.Size())
 
 	// Calculate term frequency (TF)
 	wordFreq := make(map[string]int)
 	for _, ngram := range ngrams {
-		if _, ok := v.Vocabulary[ngram]; ok {
+		if _, ok := v.Vocabulary.Get(ngram); ok {
 			wordFreq[ngram]++
-			if wordFreq[ngram] > maxFrequency {
-				maxFrequency = wordFreq[ngram]
-			}
 		}
 	}
 
 	// Calculate TF-IDF
 	for ngram, freq := range wordFreq {
-		if idx, ok := v.Vocabulary[ngram]; ok {
+		if idx, ok := v.Vocabulary.Get(ngram); ok {
 			tf := float64(freq) / float64(len(ngram))
-			idf := math.Log(float64(len(v.Vocabulary)) / float64(v.MinDF))
+			idf := math.Log(float64(v.Vocabulary.Size()) / float64(v.MinDF))
 			tfidfVector[idx] = tf * idf
 		}
 	}
@@ -82,21 +149,19 @@ func (v *TfidfVectorizer) Transform(text string) []float64 {
 	return tfidfVector
 }
 
+// CalculateNGrams generates n-grams from a string
 func CalculateNGrams(str string, n int) []string {
 	// Remove punctuation from the string
 	// This function will create all ngram sets from 1 to n. ex: n=3, will create 1-gram, 2-gram, 3-gram
-
 	reg, _ := regexp.Compile(`[,-./]|\sBD`)
 	str = reg.ReplaceAllString(str, "")
 
 	// Generate zip of ngrams (n defined in function argument)
 	var result []string
-	for r:=1; r<=n; r++ {
-
+	for r := 1; r <= n; r++ {
 		for i := 0; i < len(str)-r+1; i++ {
 			result = append(result, str[i:i+r])
 		}
-
 	}
 
 	return result

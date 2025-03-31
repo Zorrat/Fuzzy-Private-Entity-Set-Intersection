@@ -60,3 +60,35 @@ func GenerateSparseSignal(rows int, feats int, sparsity float64) [][]complex128 
 	}
 	return signal
 }
+
+// Helper functions
+func DotProduct(a, b []float64) float64 {
+	var sum float64
+	for i := range a {
+		sum += a[i] * b[i]
+	}
+	return sum
+}
+
+func GenerateTestVector(length int) []float64 {
+	vec := make([]float64, length)
+	for i := range vec {
+		vec[i] = rand.Float64()*2 - 1 // Values between -1 and 1
+	}
+	return vec
+}
+
+func norm(vec []float64) float64 {
+	var sum float64
+	for _, v := range vec {
+		sum += v * v
+	}
+	return math.Sqrt(sum)
+}
+
+func NormalizeVector(vec *[]float64) {
+	n := norm(*vec)
+	for i := range *vec {
+		(*vec)[i] /= n
+	}
+}
