@@ -2,9 +2,23 @@ package compression
 
 import (
 	"log"
+	"math"
 	"math/bits"
 	"math/cmplx"
 )
+
+func Prepare(x [][]float64) [][]complex128 {
+	result := make([][]complex128, len(x))
+	for i, slice := range x {
+		n := len(slice)
+		newSize := int(math.Pow(2, math.Ceil(math.Log2(float64(n)))))
+		result[i] = make([]complex128, newSize)
+		for j := 0; j < n; j++ {
+			result[i][j] = complex(float64(slice[j]), 0)
+		}
+	}
+	return result
+}
 
 // inplace FFT to save ram
 //   - warning: this function will clear the memory of x
@@ -83,8 +97,6 @@ func BandStopFilter(x []complex128, low, high int) []complex128 {
 }
 
 // hstack to float64 from complex128 of [][]complex128
-//
-// warning: this function will clear the memory of x
 func ToFloat64(x [][]complex128) [][]float64 {
 
 	N := len(x)
@@ -96,16 +108,12 @@ func ToFloat64(x [][]complex128) [][]float64 {
 			res[i][2*j] = real(x[i][j])
 			res[i][2*j+1] = imag(x[i][j])
 		}
-		// clear memory
-		x[i] = nil
 	}
 
 	return res
 }
 
 // use [][]float64 as real part to convert to [][]complex128
-//
-// warning: this function will clear the memory of x
 func FromFloat64(x [][]float64) [][]complex128 {
 	N := len(x)
 	M := len(x[0]) / 2
@@ -115,8 +123,6 @@ func FromFloat64(x [][]float64) [][]complex128 {
 		for j := range res[i] {
 			res[i][j] = complex(x[i][2*j], x[i][2*j+1])
 		}
-		// clear memory
-		x[i] = nil
 	}
 	return res
 }

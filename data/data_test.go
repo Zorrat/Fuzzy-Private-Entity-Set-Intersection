@@ -16,7 +16,6 @@ func init() {
 	}
 }
 
-
 func TestCleanCompanyName(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -119,18 +118,18 @@ func TestReplaceSuffixes(t *testing.T) {
 func TestJsonLoader(t *testing.T) {
 	path, _ := os.Getwd()
 	loader := NewLoader(path)
-	names,err := loader.load_names("names_train.json")
+	names, err := loader.LoadNames("names_train.json")
 	if err != nil {
 		fmt.Println(err)
 	}
-	
+
 	fmt.Printf("Loaded names count: %d\n", len(names))
 	assert.Equal(t, 8000, len(names), "Expected 1000 names")
 }
 func TestTxtLoader(t *testing.T) {
 	path, _ := os.Getwd()
 	loader := NewLoader(path)
-	names,err := loader.load_names("names_train.txt")
+	names, err := loader.LoadNames("names_train.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -141,14 +140,15 @@ func TestTxtLoader(t *testing.T) {
 func TestVectorizer(t *testing.T) {
 	path, _ := os.Getwd()
 	loader := NewLoader(path)
-	names,err := loader.load_names("names_train.json")
+	names, err := loader.LoadNames("names_train.json")
 	if err != nil {
 		fmt.Println(err)
 	}
-	
+
 	v := NewTfidfVectorizer(2, 1)
-	tfidfMatrix := v.FitTransform(names)
-	fmt.Println(len(tfidfMatrix))
+	v.Fit(names)
+	tfidfMatrix := v.BatchTransform(names)
+	fmt.Println("n = ", 2, "size :", v.Vocabulary.Count)
 	assert.Equal(t, len(names), len(tfidfMatrix), "Expected 8000 names")
 
 }

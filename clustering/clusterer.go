@@ -29,10 +29,9 @@ func computeCentroid(vectors [][]float64) []float64 {
 }
 
 // K-Means clustering (ensures each cluster contains exactly K vectors)
-func Cluster(vectors [][]float64, iterations int) [][]float64 {
+func Cluster(vectors [][]float64, names []string, iterations int) ([][]float64, []string) {
 	n := len(vectors)
 	k := int(math.Sqrt(float64(n)))
-	
 
 	// Ensure that N is divisible by K
 	if n%k != 0 {
@@ -47,14 +46,16 @@ func Cluster(vectors [][]float64, iterations int) [][]float64 {
 
 	// Create the initial empty clusters
 	clusters := make([][][]float64, k)
+	clusterNames := make([][]string, k) 
 
 	for iter := 0; iter < iterations; iter++ {
 		// Reset clusters for this iteration
 		clusters = make([][][]float64, k)
-		clusterSizes := make([]int, k) // Track the number of vectors in each cluster
+		clusterNames = make([][]string, k) // Reset names for each cluster
+		clusterSizes := make([]int, k)     // Track the number of vectors in each cluster
 
 		// Assign vectors to the closest centroid
-		for _, vec := range vectors {
+		for idx, vec := range vectors {
 			// Find the nearest centroid
 			minDist, bestCluster := math.MaxFloat64, 0
 			for j, cent := range centroids {
@@ -68,6 +69,7 @@ func Cluster(vectors [][]float64, iterations int) [][]float64 {
 			// If the chosen cluster has less than K vectors, assign the vector
 			if clusterSizes[bestCluster] < k {
 				clusters[bestCluster] = append(clusters[bestCluster], vec)
+				clusterNames[bestCluster] = append(clusterNames[bestCluster], names[idx])
 				clusterSizes[bestCluster]++
 			} else {
 				// If the cluster already has K vectors, find the next best cluster
@@ -75,6 +77,7 @@ func Cluster(vectors [][]float64, iterations int) [][]float64 {
 				for i := 0; i < k; i++ {
 					if clusterSizes[i] < k {
 						clusters[i] = append(clusters[i], vec)
+						clusterNames[i] = append(clusterNames[i], names[idx])
 						clusterSizes[i]++
 						break
 					}
@@ -90,32 +93,34 @@ func Cluster(vectors [][]float64, iterations int) [][]float64 {
 		}
 	}
 
-	return ToVector(centroids, k, clusters, true)
+	return ToVector(centroids, k, clusters, clusterNames, true)
 }
 
-func moveToFirst(target []float64, matrix [][]float64) [][]float64 {
-	for i, row := range matrix {
-		if reflect.DeepEqual(row, target) {
-			// Move found row to the front
-			matrix = append([][]float64{row}, append(matrix[:i], matrix[i+1:]...)...)
-			break
+// Move the target element (of type T) to the first position in the slice
+func moveToFirst[T any](target T, slice []T) []T {
+	for i, element := range slice {
+		if reflect.DeepEqual(element, target) {
+			// Move found element to the front
+			return append([]T{element}, append(slice[:i], slice[i+1:]...)...)
 		}
 	}
-	return matrix
+	return slice
 }
 
-func ToVector(centroid [][]float64, k int, clusters [][][]float64, sorted bool) [][]float64 {
+// ToVector processes centroids, clusters, and names, and sorts them by similarity to centroids
+func ToVector(centroids [][]float64, k int, clusters [][][]float64, clusterNames [][]string, sorted bool) ([][]float64, []string) {
 	if sorted {
-		var within_cluster_sims []float64
+		var withinClusterSims []float64
 		for i := 0; i < k; i++ {
-			within_cluster_sims = append(within_cluster_sims, utils.AverageCosineDistance(centroid[i], clusters[i]))
-			moveToFirst(centroid[i], clusters[i])
+			withinClusterSims = append(withinClusterSims, utils.AverageCosineDistance(centroids[i], clusters[i]))
+			clusters[i] = moveToFirst(centroids[i], clusters[i])
+			clusterNames[i] = moveToFirst(clusterNames[i][0], clusterNames[i])
 		}
 
-		// sort clusters by similarity to centroid
+		// Sort clusters by similarity to centroid
 		sort.Slice(clusters, func(i, j int) bool {
-			return within_cluster_sims[i] < within_cluster_sims[j]
+			return withinClusterSims[i] < withinClusterSims[j]
 		})
 	}
-	return slices.Concat(clusters...)
+	return slices.Concat(clusters...), slices.Concat(clusterNames...)
 }

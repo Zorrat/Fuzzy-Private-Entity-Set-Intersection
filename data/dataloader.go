@@ -18,7 +18,6 @@ func NewLoader(basePath string) *Loader {
 	return &Loader{basePath: basePath}
 }
 
-
 func _load_json_file(path string) ([]string, error) {
 
 	file, err := os.Open(path)
@@ -36,7 +35,7 @@ func _load_json_file(path string) ([]string, error) {
 }
 
 func _load_txt_file(path string) ([]string, error) {
-	
+
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -56,10 +55,9 @@ func _load_txt_file(path string) ([]string, error) {
 	return names, nil
 }
 
-
-func (l *Loader) load_names(fileName string) ([]string, error) {
+func (l *Loader) LoadNames(fileName string) ([]string, error) {
 	// if path ends in .json, load json file
-	filePath := filepath.Join(l.basePath, fileName) 
+	filePath := filepath.Join(l.basePath, fileName)
 	if filepath.Ext(filePath) == ".json" {
 		return _load_json_file(filePath)
 	} else {
