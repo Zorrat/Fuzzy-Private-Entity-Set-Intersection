@@ -38,6 +38,30 @@ func CosineDistance(v1, v2 []float64) float64 {
 	return 1.0 - (dot / (math.Sqrt(norm1) * math.Sqrt(norm2))) // Cosine distance
 }
 
+func CosineDistanceAll(v1, v2 [][]float64) [][]float64 {
+	result := make([][]float64, len(v1))
+	for i := range v1 {
+		result[i] = make([]float64, len(v2))
+		for j := range v2 {
+			result[i][j] = CosineDistance(v1[i], v2[j])
+		}
+	}
+	return result
+}
+
+func MeanAverageError(v1, v2 [][]float64) float64 {
+	if len(v1) != len(v2) {
+		panic("Vectors must be of the same length")
+	}
+	var totalError float64
+	for i := range v1 {
+		for j := range v1[i] {
+			totalError += math.Abs(v1[i][j] - v2[i][j])
+		}
+	}
+	return totalError / float64(len(v1)*len(v1[0]))
+}
+
 func AverageCosineDistance(vector []float64, vectors [][]float64) float64 {
 	var totalSimilarity float64
 	for j := 0; j < len(vectors); j++ {
