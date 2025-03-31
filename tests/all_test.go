@@ -5,7 +5,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/clustering"
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/compression"
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/data"
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/utils"
@@ -49,5 +48,4 @@ func TestAll(t *testing.T) {
 	assert.Equal(t, len(tfidf1_encoded), 100, "Sorted vectors should have the same count as input")
 	assert.Equal(t, len(tfidf2_encoded), 100, "Sorted vectors should have the same count as input")
 
-	
 }
