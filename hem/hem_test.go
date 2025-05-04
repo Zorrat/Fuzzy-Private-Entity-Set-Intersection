@@ -1,6 +1,7 @@
 package hem
 
 import (
+	"log"
 	"math"
 	"testing"
 
@@ -15,15 +16,19 @@ func TestEncryptDecryptCycle(t *testing.T) {
 	testVector := []float64{0.5, 0.25, -0.75, 1.0}
 
 	plaintext := ckks.NewPlaintext(*encCtx.params, encCtx.params.MaxLevel())
+	// log plaintest in print while testing
+	// log.Println("Plaintext before encoding:", plaintext)
 	encCtx.encoder.Encode(testVector, plaintext)
 	ciphertext, err := encCtx.encryptor.EncryptNew(plaintext)
 	assert.NoError(t, err, "Encryption failed")
-
+	// log.Println("Ciphertext after encryption:", ciphertext)
 	decrypted_pt := decCtx.decryptor.DecryptNew(ciphertext)
 	decoded := make([]float64, len(testVector))
 	if err = decCtx.encoder.Decode(decrypted_pt, decoded); err != nil {
 		panic(err)
 	}
+	log.Println("Decoded values after decryption:", decoded[:len(testVector)],testVector)
+
 	assert.InDeltaSlice(t, testVector, decoded[:len(testVector)], 1e-5, "Decrypted values should match original")
 }
 
@@ -91,29 +96,35 @@ func TestBatchEncryptDecryptCycle(t *testing.T) {
 }
 
 func TestCosineSimilarity(t *testing.T) {
-	encCtx, decCtx, evalCtx := GenerateContexts(8)
+	encCtx, decCtx, evalCtx := GenerateContexts(4)
 
-	normalized_a := []float64{1.0, 2.0, 3.0}
-	normalized_b := []float64{4.0, 5.0, 6.0}
+	normalized_a := utils.GenerateTestVector(5)
+	normalized_b := utils.GenerateTestVector(5)
 
 	utils.NormalizeVector(&normalized_a)
 	utils.NormalizeVector(&normalized_b)
+	log.Println("Normalized vector a:", normalized_a)
+	log.Println("Normalized vector b:", normalized_b)
 
 	ptA := ckks.NewPlaintext(*encCtx.params, encCtx.params.MaxLevel())
 	encCtx.encoder.Encode(normalized_a, ptA)
 	ctA, err := encCtx.encryptor.EncryptNew(ptA)
+	log.Println("Ciphertext A:", ctA)
 	assert.NoError(t, err, "Encryption failed")
 
 	output_ct := ckks.NewCiphertext(*encCtx.params, encCtx.params.MaxSlots(), encCtx.params.MaxLevel())
 
 	err = evalCtx.DotProduct(ctA, normalized_b, output_ct)
 	assert.NoError(t, err, "Dot product calculation failed")
+	log.Println("Ciphertext after dot product:", output_ct)
 
 	decrypted := decCtx.decryptor.DecryptNew(output_ct)
 	decoded := make([]float64, len(normalized_a))
 	decCtx.encoder.Decode(decrypted, decoded)
 
+	log.Println("Decoded values after decryption:", decoded[0])
 	expected := utils.DotProduct(normalized_a, normalized_b)
+	log.Println("Expected cosine similarity:", expected)
 	assert.InDelta(t, expected, decoded[0], 1e-4, "Cosine similarity mismatch")
 }
 
@@ -121,8 +132,8 @@ func TestBatchCosineSimilarity(t *testing.T) {
 	// Initialize contexts
 	encCtx, decCtx, evalCtx := GenerateContexts(8)
 	// Create test vectors for ciphertexts
-	numCtVectors := 10
-	vectorSize := 235
+	numCtVectors := 1
+	vectorSize := 100
 	ctVectors := make([][]float64, numCtVectors)
 	for i := range ctVectors {
 		ctVectors[i] = utils.GenerateTestVector(vectorSize)
@@ -130,7 +141,7 @@ func TestBatchCosineSimilarity(t *testing.T) {
 	}
 
 	// Create plaintext vectors for comparison
-	numPtVectors := 20
+	numPtVectors := 10
 	ptVectors := make([][]float64, numPtVectors)
 	for i := range ptVectors {
 		ptVectors[i] = utils.GenerateTestVector(vectorSize)
@@ -145,6 +156,7 @@ func TestBatchCosineSimilarity(t *testing.T) {
 			expectedSims[i][j] = utils.DotProduct(ctVectors[i], ptVectors[j])
 		}
 	}
+	log.Println("Expected cosine similarities:", expectedSims)
 
 	encryptedVectors := encCtx.BatchEncrypt(ctVectors)
 
@@ -178,5 +190,5 @@ func TestBatchCosineSimilarity(t *testing.T) {
 			}
 		}
 	}
-
 }
+

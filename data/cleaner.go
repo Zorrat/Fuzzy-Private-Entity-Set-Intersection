@@ -1,8 +1,6 @@
 package data
 
 import (
-	"encoding/json"
-	"os"
 	"regexp"
 	"strings"
 	"unicode"
@@ -11,26 +9,6 @@ import (
 	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"
 )
-
-var suffixStandards map[string][]string
-
-func init() {
-	err := loadSuffixStandards("suffix_standards.json")
-	if err != nil {
-		panic(err)
-	}
-}
-
-func loadSuffixStandards(path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	decoder := json.NewDecoder(file)
-	return decoder.Decode(&suffixStandards)
-}
 
 func CleanCompanyName(name string) string {
 	name = normalizeString(name)

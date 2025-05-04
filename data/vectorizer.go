@@ -152,16 +152,13 @@ func (v *TfidfVectorizer) Transform(text string) []float64 {
 // CalculateNGrams generates n-grams from a string
 func CalculateNGrams(str string, n int) []string {
 	// Remove punctuation from the string
-	// This function will create all ngram sets from 1 to n. ex: n=3, will create 1-gram, 2-gram, 3-gram
 	reg, _ := regexp.Compile(`[,-./]|\sBD`)
 	str = reg.ReplaceAllString(str, "")
 
-	// Generate zip of ngrams (n defined in function argument)
+	// Generate n-grams of length n
 	var result []string
-	for r := 1; r <= n; r++ {
-		for i := 0; i < len(str)-r+1; i++ {
-			result = append(result, str[i:i+r])
-		}
+	for i := 0; i < len(str)-n+1; i++ {
+		result = append(result, str[i:i+n])
 	}
 
 	return result

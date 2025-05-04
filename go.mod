@@ -5,6 +5,7 @@ go 1.24.1
 require github.com/stretchr/testify v1.10.0
 
 require (
+	github.com/mjibson/go-dsp v0.0.0-20180508042940-11479a337f12
 	github.com/tuneinsight/lattigo/v6 v6.1.1
 	golang.org/x/text v0.23.0
 )
@@ -12,7 +13,7 @@ require (
 require (
 	github.com/ALTree/bigfloat v0.0.0-20220102081255-38c8b72a9924 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/crypto v0.18.0 // indirect
