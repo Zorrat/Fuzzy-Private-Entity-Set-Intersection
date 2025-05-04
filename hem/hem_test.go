@@ -1,10 +1,14 @@
 package hem
 
 import (
+	"fmt"
 	"log"
 	"math"
+	"os"
+	"strings"
 	"testing"
 
+	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/data"
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/tuneinsight/lattigo/v6/core/rlwe"
@@ -27,7 +31,7 @@ func TestEncryptDecryptCycle(t *testing.T) {
 	if err = decCtx.encoder.Decode(decrypted_pt, decoded); err != nil {
 		panic(err)
 	}
-	log.Println("Decoded values after decryption:", decoded[:len(testVector)],testVector)
+	log.Println("Decoded values after decryption:", decoded[:len(testVector)], testVector)
 
 	assert.InDeltaSlice(t, testVector, decoded[:len(testVector)], 1e-5, "Decrypted values should match original")
 }
@@ -96,7 +100,7 @@ func TestBatchEncryptDecryptCycle(t *testing.T) {
 }
 
 func TestCosineSimilarity(t *testing.T) {
-	encCtx, decCtx, evalCtx := GenerateContexts(4)
+	encCtx, decCtx, evalCtx := GenerateContexts(8)
 
 	normalized_a := utils.GenerateTestVector(5)
 	normalized_b := utils.GenerateTestVector(5)
@@ -192,3 +196,129 @@ func TestBatchCosineSimilarity(t *testing.T) {
 	}
 }
 
+func TestWithNamesWithoutCompression(t *testing.T) {
+	query := "Mohan Tej"
+	store := []string{"Bindu", "Sudheer", "Rohan", "Sahiti", "Kartik", "Phani", "Keyur", "Aditya", "Priya", "Mohan Teja"}
+	path, _ := os.Getwd()
+	loader := data.NewLoader(path)
+
+	globalNames, err := loader.LoadNames("global.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("=== Entity Matching with Homomorphic Encryption ===")
+	log.Print("Loaded names, Vectorizing...")
+	vectorizer := data.NewTfidfVectorizer(2, 1)
+	vectorizer.Fit(globalNames)
+
+	// Transform data
+	queryVector := vectorizer.Transform(query)
+	storeVectors := vectorizer.BatchTransform(store)
+
+	utils.NormalizeVector(&queryVector)
+	for i := range storeVectors {
+		utils.NormalizeVector(&storeVectors[i])
+	}
+	queryVectors := make([][]float64, 1)
+	queryVectors[0] = queryVector
+
+	// Calculate expected plaintext similarities for verification
+	log.Println("Expected plaintext similarities:")
+	for i, name := range store {
+		sim := utils.DotProduct(queryVector, storeVectors[i])
+		log.Printf("  %s: %.6f", name, sim)
+	}
+
+	// Encrypt the query vector
+	encCtx, decCtx, evalCtx := GenerateContexts(10)
+
+	// Batch encrypt the query vector
+	encryptedQuery := encCtx.BatchEncrypt(queryVectors)
+
+	// Compute cosine similarities using HE
+	resultMatrix, err := evalCtx.BatchDotProduct(encryptedQuery, storeVectors)
+	if err != nil {
+		t.Fatalf("Error computing batch dot product: %v", err)
+	}
+
+	// Create a matrix to store all similarity values
+	similarityMatrix := make([][]float64, 1) // 1 query x len(store) items
+	similarityMatrix[0] = make([]float64, len(store))
+
+	// Decrypt the results
+	log.Println("\nHE-computed Cosine Similarity Matrix:")
+	for i := range resultMatrix {
+		// Each row contains similarities between query and all store vectors
+		decryptedBatch := decCtx.BatchDecrypt(resultMatrix[i])
+
+		log.Printf("Similarities for query '%s':", query)
+		for j, storeName := range store {
+			if decryptedBatch[j] == nil {
+				log.Printf("  %s: <nil>", storeName)
+				similarityMatrix[i][j] = -1 // Use -1 to indicate null values
+				continue
+			}
+
+			// The cosine similarity value is stored in the first element
+			// due to the InnerSum operation in DotProduct
+			similarity := decryptedBatch[j][0]
+
+			// Store the similarity value in our matrix
+			similarityMatrix[i][j] = similarity
+
+			log.Printf("  %s: %.6f", storeName, similarity)
+
+			// Verify the result matches the expected plaintext calculation
+			expectedSim := utils.DotProduct(queryVector, storeVectors[j])
+			assert.InDelta(t, expectedSim, similarity, 1e-5,
+				"Cosine similarity mismatch for '%s': expected %.6f, got %.6f",
+				storeName, expectedSim, similarity)
+		}
+	}
+
+	// Log the complete similarity matrix
+	log.Println("\nDecrypted Cosine Similarity Matrix:")
+	for i := range similarityMatrix {
+		rowValues := make([]string, len(similarityMatrix[i]))
+		for j, val := range similarityMatrix[i] {
+			if val == -1 {
+				rowValues[j] = "nil"
+			} else {
+				rowValues[j] = fmt.Sprintf("%.6f", val)
+			}
+		}
+		log.Printf("Row %d: [%s]", i, strings.Join(rowValues, ", "))
+	}
+
+	// You can also print it as a table format with entity names
+	log.Println("\nSimilarity Matrix with Entity Names:")
+	log.Printf("%-15s | %s", "Query \\ Store", strings.Join(store, " | "))
+	log.Printf("%s", strings.Repeat("-", 16+len(store)*15))
+	for i := range similarityMatrix {
+		values := make([]string, len(similarityMatrix[i]))
+		for j, val := range similarityMatrix[i] {
+			if val == -1 {
+				values[j] = "nil      "
+			} else {
+				values[j] = fmt.Sprintf("%-9.6f", val)
+			}
+		}
+		log.Printf("%-15s | %s", query, strings.Join(values, " | "))
+	}
+
+	// Find and print the best match
+	bestMatch := ""
+	bestScore := -1.0
+
+	decryptedBatch := decCtx.BatchDecrypt(resultMatrix[0])
+	for j, storeName := range store {
+		if decryptedBatch[j] != nil && decryptedBatch[j][0] > bestScore {
+			bestScore = decryptedBatch[j][0]
+			bestMatch = storeName
+		}
+	}
+
+	log.Printf("\nBest match for '%s': '%s' with similarity %.6f",
+		query, bestMatch, bestScore)
+}
