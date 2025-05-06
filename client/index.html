@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BlindMatch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="bg-white text-slate-900 font-sans">
+    <!-- Navigation Dots -->
+    <div
+      class="fixed right-6 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-4"
+    >
+      <a href="#hero" class="nav-dot active" data-section="hero">
+        <span
+          class="absolute -left-12 top-0 opacity-0 transition-opacity duration-300 text-xs text-indigo-600 font-medium whitespace-nowrap"
+          >Home</span
+        >
+      </a>
+      <a href="#technical" class="nav-dot" data-section="technical">
+        <span
+          class="absolute -left-12 top-0 opacity-0 transition-opacity duration-300 text-xs text-indigo-600 font-medium whitespace-nowrap"
+          >How It Works</span
+        >
+      </a>
+      <a href="#demo" class="nav-dot" data-section="demo">
+        <span
+          class="absolute -left-12 top-0 opacity-0 transition-opacity duration-300 text-xs text-indigo-600 font-medium whitespace-nowrap"
+          >Try Demo</span
+        >
+      </a>
+    </div>
+
+    <!-- Section 1: Hero/Title -->
+    <section
+      id="hero"
+      class="flex items-center justify-center bg-gradient-to-br from-indigo-50 to-white"
+    >
+      <div class="max-w-6xl px-4 text-center">
+        <div class="mb-6 flex justify-center invisible" data-animate="fade-in">
+          <div class="relative w-24 h-24">
+            <div
+              class="absolute inset-0 bg-[url('/venndiagram.png')] bg-no-repeat bg-center bg-contain opacity-40"
+            ></div>
+          </div>
+        </div>
+        <h1
+          class="text-7xl font-extrabold text-indigo-500 mb-6 invisible"
+          data-animate="fade-in"
+          data-delay="100"
+        >
+          BlindMatch
+        </h1>
+        <p
+          class="text-2xl text-slate-700 max-w-3xl mx-auto mb-8 invisible"
+          data-animate="fade-in"
+          data-delay="200"
+        >
+          Privacy-preserving entity resolution using homomorphic encryption
+        </p>
+        <div class="animate-bounce mt-12">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8 mx-auto text-indigo-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 14l-7 7m0 0l-7-7m7 7V3"
+            />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Technical Information -->
+    <section
+      id="technical"
+      class="bg-slate-100 flex items-center justify-center"
+    >
+      <div class="max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div class="text-center mb-16">
+          <div
+            class="flex items-center justify-center gap-2 mb-4 invisible"
+            data-animate="fade-in"
+          >
+            <span class="text-indigo-600 font-bold">2</span>
+            <span class="text-slate-400">-</span>
+            <span class="text-slate-600 font-medium">How It Works</span>
+          </div>
+          <h2
+            class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-6 invisible"
+            data-animate="fade-in"
+            data-delay="100"
+          >
+            Secure Entity Matching, Every Time.
+          </h2>
+          <p
+            class="text-lg text-slate-600 max-w-3xl mx-auto invisible"
+            data-animate="fade-in"
+            data-delay="200"
+          >
+            BlindMatch enables secure entity resolution across organizations
+            without exposing sensitive data. Through homomorphic encryption,
+            entities are matched while raw data remains encrypted throughout the
+            process.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-y-16 mb-16">
+          <div
+            class="flex flex-col md:flex-row items-center gap-8 workflow-step invisible"
+            data-animate="fade-in"
+          >
+            <div
+              class="md:w-1/2 invisible"
+              data-animate="slide-in-left"
+              data-delay="100"
+            >
+              <div class="mb-4 flex items-center">
+                <span
+                  class="step-number w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg"
+                  >1</span
+                >
+                <h3 class="text-2xl font-bold text-indigo-600 ml-4">
+                  Data Encryption
+                </h3>
+              </div>
+              <p class="text-slate-600 mb-4">
+                Each organization independently encrypts their entity data using
+                homomorphic encryption. This creates a mathematical
+                representation that preserves the structural properties needed
+                for comparison while making the original data completely
+                unreadable.
+              </p>
+              <p class="text-slate-500">
+                <span class="font-semibold">Privacy guarantee:</span> Raw data
+                never leaves the organization's systems.
+              </p>
+            </div>
+            <div
+              class="md:w-1/2 p-6 rounded-lg workflow-image invisible flex justify-center items-center"
+              data-animate="slide-in-right"
+              data-delay="200"
+            >
+              <img
+                src="https://www.svgrepo.com/show/105059/data-encryption.svg"
+                alt="Data Encryption Process"
+                class="rounded"
+                style="max-width: 100px; height: auto"
+              />
+            </div>
+          </div>
+
+          <div
+            class="flex flex-col md:flex-row items-center gap-8 md:flex-row-reverse workflow-step invisible"
+            data-animate="fade-in"
+          >
+            <div
+              class="md:w-1/2 invisible"
+              data-animate="slide-in-right"
+              data-delay="100"
+            >
+              <div class="mb-4 flex items-center">
+                <span
+                  class="step-number w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg"
+                  >2</span
+                >
+                <h3 class="text-2xl font-bold text-indigo-600 ml-4">
+                  Smart Preprocessing
+                </h3>
+              </div>
+              <p class="text-slate-600 mb-4">
+                Before encryption, entity data undergoes intelligent
+                preprocessing to standardize formats, remove noise, and handle
+                variations in naming conventions. This ensures that similar
+                entities will match despite minor differences in representation.
+              </p>
+              <p class="text-slate-500">
+                <span class="font-semibold">Key feature:</span> Advanced text
+                normalization handles abbreviations, suffixes, and character
+                variations.
+              </p>
+            </div>
+            <div
+              class="md:w-1/2 p-6 rounded-lg workflow-image invisible flex justify-center items-center"
+              data-animate="slide-in-left"
+              data-delay="200"
+            >
+              <img
+                src="data-processing-icon.png"
+                alt="Data Preprocessing"
+                class="rounded"
+                style="max-width: 100px; height: auto"
+              />
+            </div>
+          </div>
+
+          <div
+            class="flex flex-col md:flex-row items-center gap-8 workflow-step invisible"
+            data-animate="fade-in"
+          >
+            <div
+              class="md:w-1/2 invisible"
+              data-animate="slide-in-left"
+              data-delay="100"
+            >
+              <div class="mb-4 flex items-center">
+                <span
+                  class="step-number w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg"
+                  >3</span
+                >
+                <h3 class="text-2xl font-bold text-indigo-600 ml-4">
+                  HE Computation
+                </h3>
+              </div>
+              <p class="text-slate-600 mb-4">
+                The preprocessed data is transformed into polynomial
+                representations and compressed for efficient homomorphic
+                operations. This enables secure dot product calculations to
+                measure similarity while the data remains fully encrypted.
+              </p>
+              <p class="text-slate-500">
+                <span class="font-semibold">Technical edge:</span> Optimized
+                algorithms ensure computation remains practical even with large
+                datasets.
+              </p>
+            </div>
+            <div
+              class="md:w-1/2 p-6 rounded-lg workflow-image invisible flex justify-center items-center"
+              data-animate="slide-in-right"
+              data-delay="200"
+            >
+              <img
+                src="encrypted-file-icon.png"
+                alt="Polynomial Transformation"
+                class="rounded"
+                style="max-width: 100px; height: auto"
+              />
+            </div>
+          </div>
+
+          <div
+            class="flex flex-col md:flex-row items-center gap-8 md:flex-row-reverse workflow-step invisible"
+            data-animate="fade-in"
+          >
+            <div
+              class="md:w-1/2 invisible"
+              data-animate="slide-in-right"
+              data-delay="100"
+            >
+              <div class="mb-4 flex items-center">
+                <span
+                  class="step-number w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg"
+                  >4</span
+                >
+                <h3 class="text-2xl font-bold text-indigo-600 ml-4">
+                  Secure Matching
+                </h3>
+              </div>
+              <p class="text-slate-600 mb-4">
+                The system returns encrypted similarity scores between entities.
+                Organizations can decrypt only these scores, revealing potential
+                matches without exposing any underlying data. This enables
+                confident decision-making while maintaining strict privacy.
+              </p>
+              <p class="text-slate-500">
+                <span class="font-semibold">End result:</span> Accurate entity
+                matching while all sensitive data remains protected.
+              </p>
+            </div>
+            <div
+              class="md:w-1/2 p-6 rounded-lg workflow-image invisible flex justify-center items-center"
+              data-animate="slide-in-left"
+              data-delay="200"
+            >
+              <img
+                src="https://www.svgrepo.com/show/74601/security.svg"
+                alt="Secure Matching Results"
+                class="rounded"
+                style="max-width: 100px; height: auto"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="text-center invisible"
+          data-animate="fade-in"
+          data-delay="300"
+        >
+          <a
+            href="#demo"
+            class="inline-flex items-center text-indigo-600 font-medium hover:text-indigo-800 transition-colors"
+          >
+            Try the demo
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 ml-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Demo -->
+    <section id="demo" class="flex flex-col items-center justify-between p-4">
+      <div
+        class="flex flex-col md:flex-row w-full max-w-6xl gap-12 items-center flex-grow invisible"
+        data-animate="fade-in"
+      >
+        <!-- Organization A Section -->
+        <div
+          class="flex-1 p-6 bg-slate-100 rounded-lg shadow-lg invisible"
+          data-animate="slide-in-left"
+          data-delay="100"
+        >
+          <h2 class="text-2xl font-bold text-indigo-400 mb-4">
+            Organization A
+          </h2>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Search for items..."
+            class="w-full p-4 text-base rounded-lg bg-slate-200 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition search-input"
+          />
+          <div
+            id="queryDisplay"
+            class="mt-4 text-sm text-slate-500 font-mono"
+          ></div>
+          <div id="processing-indicator" class="mt-4 hidden">
+            <div class="flex items-center justify-center">
+              <div
+                class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500"
+              ></div>
+              <span class="ml-2 text-indigo-500">Processing...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Heading with Background Image -->
+        <div
+          class="text-center relative h-32 flex items-center justify-center invisible"
+          data-animate="fade-in"
+          data-delay="200"
+        >
+          <div
+            class="absolute inset-0 bg-[url('/venndiagram.png')] bg-no-repeat bg-center bg-contain opacity-10"
+          ></div>
+          <h1
+            class="text-4xl font-extrabold text-indigo-400 uppercase tracking-wide z-10"
+          >
+            BlindMatch
+          </h1>
+        </div>
+
+        <!-- Organization B Section -->
+        <div
+          class="flex-1 p-6 bg-slate-100 rounded-lg shadow-lg invisible"
+          data-animate="slide-in-right"
+          data-delay="100"
+        >
+          <h2 class="text-2xl font-bold text-indigo-400 mb-4">
+            Organization B
+          </h2>
+          <ul id="dataList" class="space-y-3"></ul>
+          <input
+            id="addInput"
+            type="text"
+            placeholder="Add a new item..."
+            class="w-full p-4 mt-4 text-base rounded-lg bg-slate-200 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition search-input"
+          />
+          <div
+            class="text-sm font-mono text-slate-500 mt-6"
+            id="encDisplay"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Footer Section -->
+      <footer
+        class="w-full flex justify-between items-center mt-8 p-4 invisible"
+        data-animate="fade-in"
+        data-delay="300"
+      >
+        <div class="text-sm text-slate-500">
+          Authors: <span class="font-bold">Rohan Thorat</span>,
+          <span class="font-bold">Mohan Teja</span>
+        </div>
+        <div>
+          <img
+            src="/university-at-buffalo.png"
+            alt="University at Buffalo Logo"
+            class="h-20"
+          />
+        </div>
+      </footer>
+    </section>
+
+    <section
+      id="how-it-works"
+      class="bg-slate-100 flex items-center justify-center"
+    >
+      <div class="max-w-6xl px-4 py-12">
+        <div class="text-center mb-16">
+          <div
+            class="flex items-center justify-center gap-2 mb-4 invisible"
+            data-animate="fade-in"
+          >
+            <span class="text-indigo-600 font-bold">2</span>
+            <span class="text-slate-400">-</span>
+            <span class="text-slate-600 font-medium">Under the Hood</span>
+          </div>
+          <h2
+            class="text-4xl font-bold text-slate-800 mb-6 invisible"
+            data-animate="fade-in"
+            data-delay="100"
+          >
+            The Technology Behind Secure Matching
+          </h2>
+          <p
+            class="text-lg text-slate-600 max-w-3xl mx-auto invisible"
+            data-animate="fade-in"
+            data-delay="200"
+          >
+            Explore the key technical functions that power BlindMatch's secure
+            and accurate entity matching process.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <!-- Step 1 -->
+          <div
+            class="flex flex-col invisible"
+            data-animate="fade-in"
+            data-delay="0"
+          >
+            <div class="mb-4 flex items-center">
+              <span
+                class="step-number w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg"
+                >1</span
+              >
+              <h3 class="text-2xl font-bold text-indigo-600 ml-4">
+                Intelligent Normalization
+              </h3>
+            </div>
+            <p class="text-slate-600 mb-4">
+              The <code>data.CleanCompanyName(name string)</code> function is
+              crucial for preparing data. It standardizes company names by
+              handling various suffixes, removing punctuation, and converting
+              text to lowercase.
+            </p>
+            <p class="text-slate-500">
+              <span class="font-semibold">Benefit:</span> Improves matching
+              accuracy by resolving naming variations.
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div
+            class="flex flex-col invisible"
+            data-animate="fade-in"
+            data-delay="100"
+          >
+            <div class="mb-4 flex items-center">
+              <span
+                class="step-number w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg"
+                >2</span
+              >
+              <h3 class="text-2xl font-bold text-indigo-600 ml-4">
+                TF-IDF Vectorization
+              </h3>
+            </div>
+            <p class="text-slate-600 mb-4">
+              The <code>data.TfidfVectorizer</code> converts names into
+              numerical vectors using TF-IDF. The <code>Fit</code> method builds
+              a vocabulary of n-grams, and <code>Transform</code> creates
+              vectors representing importance.
+            </p>
+            <p class="text-slate-500">
+              <span class="font-semibold">Key function:</span> Transforms
+              textual data into a numerical format suitable for computation.
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div
+            class="flex flex-col invisible"
+            data-animate="fade-in"
+            data-delay="200"
+          >
+            <div class="mb-4 flex items-center">
+              <span
+                class="step-number w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg"
+                >3</span
+              >
+              <h3 class="text-2xl font-bold text-indigo-600 ml-4">
+                Compressor
+              </h3>
+            </div>
+            <p class="text-slate-600 mb-4">
+              The <code>compression</code> package prepares vectorized data for
+              efficient processing. <code>Prepare</code> converts to complex
+              numbers and pads data, and <code>FFT</code> applies Fast Fourier
+              Transform.
+            </p>
+            <p class="text-slate-500">
+              <span class="font-semibold">Key functions:</span> Prepares and
+              transforms data for efficient and secure computation.
+            </p>
+          </div>
+
+          <!-- Step 4 -->
+          <div
+            class="flex flex-col invisible"
+            data-animate="fade-in"
+            data-delay="300"
+          >
+            <div class="mb-4 flex items-center">
+              <span
+                class="step-number w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg"
+                >4</span
+              >
+              <h3 class="text-2xl font-bold text-indigo-600 ml-4">
+                Secure Context Generation
+              </h3>
+            </div>
+            <p class="text-slate-600 mb-4">
+              <code>hem.GenerateContexts(ln int)</code> initializes the
+              homomorphic encryption setup, generating keys and parameters.
+              <code>ln</code> controls the encrypted vector capacity.
+            </p>
+            <p class="text-slate-500">
+              <span class="font-semibold">Core technology:</span> Enables
+              computations on encrypted data without decryption.
+            </p>
+          </div>
+
+          <!-- Step 5 -->
+          <div
+            class="flex flex-col invisible"
+            data-animate="fade-in"
+            data-delay="400"
+          >
+            <div class="mb-4 flex items-center">
+              <span
+                class="step-number w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg"
+                >5</span
+              >
+              <h3 class="text-2xl font-bold text-indigo-600 ml-4">
+                Encrypted Data Handling
+              </h3>
+            </div>
+            <p class="text-slate-600 mb-4">
+              <code>hem.encryptorContext.BatchEncrypt</code> encrypts vector
+              batches, while
+              <code>hem.decryptorContext.BatchDecrypt</code> decrypts them back
+              to original form.
+            </p>
+            <p class="text-slate-500">
+              <span class="font-semibold">Data security:</span> Ensures
+              sensitive information remains protected throughout the process.
+            </p>
+          </div>
+
+          <!-- Step 6 -->
+          <div
+            class="flex flex-col invisible"
+            data-animate="fade-in"
+            data-delay="500"
+          >
+            <div class="mb-4 flex items-center">
+              <span
+                class="step-number w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg"
+                >6</span
+              >
+              <h3 class="text-2xl font-bold text-indigo-600 ml-4">
+                Private Matching Logic
+              </h3>
+            </div>
+            <p class="text-slate-600 mb-4">
+              <code>hem.evaluatorContext.BatchDotProduct</code> and
+              <code>utils.CosineDistance</code> enable encrypted similarity
+              computations.
+            </p>
+            <p class="text-slate-500">
+              <span class="font-semibold">Privacy-preserving:</span> Enables
+              matching while keeping data confidential.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Enhanced Demo Script
+      const data = [
+        "Acme Corp",
+        "Apex Inc",
+        "Global Industries",
+        "Acme Corporation Ltd",
+        "Zenith Solutions",
+      ];
+
+      const dataList = document.getElementById("dataList");
+      const encDisplay = document.getElementById("encDisplay");
+      const processingIndicator = document.getElementById(
+        "processing-indicator"
+      );
+
+      function renderList(highlights = [], sims = []) {
+        dataList.innerHTML = "";
+        data.forEach((item, idx) => {
+          const li = document.createElement("li");
+          const isHighlighted = highlights[idx];
+
+          li.className = `flex justify-between items-center px-4 py-3 rounded-lg transition duration-300 hover:bg-slate-300 ${
+            isHighlighted
+              ? "match-highlight bg-emerald-200 font-semibold"
+              : "bg-slate-200"
+          }`;
+
+          const spanText = document.createElement("span");
+          spanText.textContent = item;
+
+          const simScore = sims[idx] !== undefined ? sims[idx].toFixed(3) : "";
+          const spanSim = document.createElement("span");
+          spanSim.textContent = simScore;
+          spanSim.className = "text-sm text-slate-500";
+
+          li.appendChild(spanText);
+          li.appendChild(spanSim);
+
+          // Add animation delay for sequential appearance
+          li.style.opacity = "0";
+          li.style.animation = `fadeIn 0.5s ease forwards ${idx * 0.1 + 0.2}s`;
+
+          dataList.appendChild(li);
+        });
+      }
+
+      document
+        .getElementById("addInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter" && this.value.trim() !== "") {
+            const newItem = this.value.trim();
+
+            // Add with animation
+            data.push(newItem);
+            this.value = "";
+            renderList();
+
+            // Flash effect on the new item
+            const newLi = dataList.lastChild;
+            newLi.style.animation = "pulse 1s";
+
+            // Show a temporary notification
+            const notification = document.createElement("div");
+            notification.className =
+              "fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg";
+            notification.textContent = `Added: ${newItem}`;
+            document.body.appendChild(notification);
+
+            // Remove notification after 2 seconds
+            setTimeout(() => {
+              notification.style.opacity = "0";
+              notification.style.transition = "opacity 0.5s ease";
+              setTimeout(() => notification.remove(), 500);
+            }, 2000);
+          }
+        });
+
+      function toSuperscript(num) {
+        const superscriptMap = {
+          0: "⁰",
+          1: "¹",
+          2: "²",
+          3: "³",
+          4: "⁴",
+          5: "⁵",
+          6: "⁶",
+          7: "⁷",
+          8: "⁸",
+          9: "⁹",
+          "-": "⁻",
+        };
+        return String(num)
+          .split("")
+          .map((ch) => superscriptMap[ch] || "")
+          .join("");
+      }
+
+      document
+        .getElementById("searchInput")
+        .addEventListener("keydown", async function (e) {
+          if (e.key === "Enter" && this.value.trim() !== "") {
+            const query = this.value.trim();
+
+            // Show processing indicator
+            processingIndicator.classList.remove("hidden");
+
+            try {
+              const response = await fetch("http://localhost:8080/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query, data }),
+              });
+
+              const result = await response.json();
+              const cosine_sims = result.cosine_sims || [];
+              const highlights = cosine_sims.map((sim) => sim > 0.5);
+
+              // Hide processing indicator
+              processingIndicator.classList.add("hidden");
+
+              renderList(highlights, cosine_sims);
+
+              const enc = result.query_enc || [];
+              let polynomial = "";
+              if (enc.length > 4) {
+                polynomial = [
+                  ...enc
+                    .slice(0, 5)
+                    .map((coeff, idx) => `${coeff}x${toSuperscript(idx)}`),
+                  "...",
+                  ...enc
+                    .slice(-5)
+                    .map(
+                      (coeff, idx) =>
+                        `${coeff}x${toSuperscript(enc.length - 2 + idx)}`
+                    ),
+                ].join(" + ");
+              } else {
+                polynomial = enc
+                  .map((coeff, idx) => `${coeff}x^${idx}`)
+                  .join(" + ");
+              }
+
+              // Update the query display with animation
+              const queryDisplay = document.getElementById("queryDisplay");
+              queryDisplay.innerHTML = `
+              <div class="opacity-0" style="animation: fadeIn 0.5s ease-out forwards">
+                <p class="text-sm text-slate-600">Encrypted Query Polynomial:</p>
+                <h3 class="text-lg font-bold text-indigo-400 mt-2 overflow-x-auto" style="max-width: 100%;">${polynomial}</h3>
+              </div>
+            `;
+            } catch (error) {
+              // Hide processing indicator and show error
+              processingIndicator.classList.add("hidden");
+              alert("Error processing request: " + error.message);
+            }
+          }
+        });
+
+      // Initialize the list
+      renderList();
+
+      // Enhanced Navigation and Animation
+      document.addEventListener("DOMContentLoaded", function () {
+        // Show nav dot labels on hover
+        const navDots = document.querySelectorAll(".nav-dot");
+        navDots.forEach((dot) => {
+          dot.addEventListener("mouseenter", function () {
+            const label = this.querySelector("span");
+            label.style.opacity = "1";
+          });
+
+          dot.addEventListener("mouseleave", function () {
+            const label = this.querySelector("span");
+            label.style.opacity = "0";
+          });
+        });
+
+        // Update active navigation dot based on scroll position
+        const sections = document.querySelectorAll("section");
+
+        function updateNav() {
+          const currentPos = window.scrollY;
+
+          sections.forEach((section, index) => {
+            const sectionTop = section.offsetTop - 100;
+            const sectionHeight = section.offsetHeight;
+
+            if (
+              currentPos >= sectionTop &&
+              currentPos < sectionTop + sectionHeight
+            ) {
+              navDots.forEach((dot) => dot.classList.remove("active"));
+              navDots[index].classList.add("active");
+            }
+          });
+        }
+
+        // Handle scroll events
+        window.addEventListener("scroll", updateNav);
+
+        // Intersection Observer for animations
+        const animateElements = document.querySelectorAll("[data-animate]");
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const el = entry.target;
+                const animation = el.getAttribute("data-animate");
+                const delay = el.getAttribute("data-delay") || 0;
+
+                // Remove invisible class and add animation class
+                el.classList.remove("invisible");
+                el.style.animationDelay = `${delay}ms`;
+                el.classList.add(animation);
+
+                // Unobserve after animation
+                observer.unobserve(el);
+              }
+            });
+          },
+          { threshold: 0.15, rootMargin: "-50px" }
+        );
+
+        animateElements.forEach((el) => {
+          observer.observe(el);
+        });
+      });
+    </script>
+  </body>
+</html>
