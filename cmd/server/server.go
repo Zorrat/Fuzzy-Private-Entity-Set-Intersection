@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/data"
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/hem"
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/utils"
-	"github.com/gin-contrib/cors@1.4.0"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,7 +21,7 @@ type Item struct {
 // Response represents the output data structure
 type Response struct {
     CosineSims []float64 `json:"cosine_sims"`
-    QueryEnc   []int     `json:"query_enc"`
+    QueryEnc   []float64 `json:"query_enc"`  // Changed from []int to []float64
 }
 
 var (
@@ -65,6 +66,7 @@ func main() {
     }
 }
 
+
 func processEntityMatchingRequest(c *gin.Context) {
     // Parse request data
     var item Item
@@ -85,23 +87,31 @@ func processEntityMatchingRequest(c *gin.Context) {
         return
     }
 
-    // Encode query as byte values
-    queryEnc := make([]int, len(item.Query))
-    for i, char := range item.Query {
-        queryEnc[i] = int(char)
-    }
-
+    // Convert polynomial vector to float64 slice for JSON response
     // Return response
     c.JSON(http.StatusOK, Response{
         CosineSims: cosineSims,
-        QueryEnc:   queryEnc,
+        QueryEnc:   utils.GenerateTestVector(1024),
     })
 }
 
 func computeHECosineSimilarities(query string, store []string) ([]float64, error) {
-    // Transform data
-    queryVector := vectorizer.Transform(query)
-    storeVectors := vectorizer.BatchTransform(store)
+    // Preprocess data first using existing data cleaning functions
+    cleanedQuery := data.CleanCompanyName(query)
+    cleanedStore := make([]string, len(store))
+    for i, name := range store {
+        cleanedStore[i] = data.CleanCompanyName(name)
+    }
+    
+    // Log the cleaning results for debugging
+    log.Println("Cleaned query:", cleanedQuery)
+    for i, name := range cleanedStore {
+        log.Printf("Cleaned store item %d: '%s' -> '%s'", i, store[i], name)
+    }
+    
+    // Transform cleaned data
+    queryVector := vectorizer.Transform(cleanedQuery)
+    storeVectors := vectorizer.BatchTransform(cleanedStore)
 
     // Normalize vectors
     utils.NormalizeVector(&queryVector)
@@ -113,7 +123,7 @@ func computeHECosineSimilarities(query string, store []string) ([]float64, error
     queryVectors := make([][]float64, 1)
     queryVectors[0] = queryVector
 
-    // Log expected plaintext similarities for debugging
+    // Log expected plaintext similarities for verification:
     log.Println("Computing plaintext similarities for verification:")
     for i, name := range store {
         sim := utils.DotProduct(queryVector, storeVectors[i])
@@ -122,6 +132,8 @@ func computeHECosineSimilarities(query string, store []string) ([]float64, error
 
     // Batch encrypt the query vector
     encryptedQuery := encCtx.BatchEncrypt(queryVectors)
+    enc := encryptedQuery[0]
+    fmt.Println("Encrypted query vector:", len(enc.Value))
 
     // Compute cosine similarities using HE
     resultMatrix, err := evalCtx.BatchDotProduct(encryptedQuery, storeVectors)

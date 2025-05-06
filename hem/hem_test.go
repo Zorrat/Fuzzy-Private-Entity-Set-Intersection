@@ -8,8 +8,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/compression"
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/data"
 	"github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/utils"
+	"github.com/mjibson/go-dsp/fft"
 	"github.com/stretchr/testify/assert"
 	"github.com/tuneinsight/lattigo/v6/core/rlwe"
 	"github.com/tuneinsight/lattigo/v6/schemes/ckks"
@@ -321,4 +323,150 @@ func TestWithNamesWithoutCompression(t *testing.T) {
 
 	log.Printf("\nBest match for '%s': '%s' with similarity %.6f",
 		query, bestMatch, bestScore)
+}
+
+func TestWithNamesWithCompression(t *testing.T) {
+    query := "Mohan Tej"
+    store := []string{"Bindu", "Sudheer", "Rohan", "Sahiti", "Kartik", "Phani", "Keyur", "Aditya", "Priya", "Mohan Teja"}
+    path, _ := os.Getwd()
+    loader := data.NewLoader(path)
+
+    globalNames, err := loader.LoadNames("global.json")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    log.Printf("=== Entity Matching with Compression + Homomorphic Encryption ===")
+    log.Print("Loaded names, Vectorizing...")
+    vectorizer := data.NewTfidfVectorizer(2, 1)
+    vectorizer.Fit(globalNames)
+
+    // Transform data
+    queryVector := vectorizer.Transform(query)
+    storeVectors := vectorizer.BatchTransform(store)
+    log.Printf("Original vector size: %d", len(queryVector))
+
+    // Calculate plaintext similarities before compression for reference
+    log.Println("Original plaintext similarities (before compression):")
+    utils.NormalizeVector(&queryVector)
+    for i := range storeVectors {
+        utils.NormalizeVector(&storeVectors[i])
+    }
+    for i, name := range store {
+        sim := utils.DotProduct(queryVector, storeVectors[i])
+        log.Printf("  %s: %.6f", name, sim)
+    }
+
+    // Apply FFT + High Pass Filter compression
+    cutoff := 512
+    log.Printf("=== Applying High Pass Filter Compression (cutoff=%d) ===", cutoff)
+    
+    // Apply FFT to query vector
+    queryFft := fft.FFTReal(queryVector)
+    
+    // Apply High Pass Filter to query vector
+    queryHp := compression.HighPassFilter(queryFft, cutoff)
+    
+    // Convert back to float64
+    queryCompressed := compression.ToFloat64([][]complex128{queryHp})[0]
+    
+    // Apply FFT and compression to store vectors
+    storeCompressed := make([][]float64, len(storeVectors))
+    for i, vector := range storeVectors {
+        fftVector := fft.FFTReal(vector)
+        hpVector := compression.HighPassFilter(fftVector, cutoff)
+        storeCompressed[i] = compression.ToFloat64([][]complex128{hpVector})[0]
+    }
+    
+    log.Printf("Compressed vector size: %d (%.2f%% reduction)", 
+        len(queryCompressed), 100*(1-float64(len(queryCompressed))/float64(len(queryVector))))
+    
+    // Calculate plaintext similarities after compression for reference
+    log.Println("Plaintext similarities after compression:")
+    utils.NormalizeVector(&queryCompressed)
+    for i := range storeCompressed {
+        utils.NormalizeVector(&storeCompressed[i])
+    }
+    
+    for i, name := range store {
+        sim := utils.DotProduct(queryCompressed, storeCompressed[i])
+        log.Printf("  %s: %.6f", name, sim)
+    }
+
+    // Prepare for homomorphic encryption
+    queryVectors := make([][]float64, 1)
+    queryVectors[0] = queryCompressed
+    
+    // Initialize encryption contexts
+    encCtx, decCtx, evalCtx := GenerateContexts(10)
+    
+    // Batch encrypt the compressed query vector
+    encryptedQuery := encCtx.BatchEncrypt(queryVectors)
+    
+    // Compute cosine similarities using HE
+    resultMatrix, err := evalCtx.BatchDotProduct(encryptedQuery, storeCompressed)
+    if err != nil {
+        t.Fatalf("Error computing batch dot product: %v", err)
+    }
+    
+    // Create a matrix to store all similarity values
+    similarityMatrix := make([][]float64, 1) // 1 query x len(store) items
+    similarityMatrix[0] = make([]float64, len(store))
+    
+    // Decrypt the results
+    log.Println("\nHE-computed Cosine Similarity Matrix (with compression):")
+    decryptedBatch := decCtx.BatchDecrypt(resultMatrix[0])
+    
+    log.Printf("Similarities for query '%s':", query)
+    for j, storeName := range store {
+        if decryptedBatch[j] == nil {
+            log.Printf("  %s: <nil>", storeName)
+            similarityMatrix[0][j] = -1 // Use -1 to indicate null values
+            continue
+        }
+        
+        // The cosine similarity value is stored in the first element
+        similarity := decryptedBatch[j][0]
+        
+        // Store the similarity value in our matrix
+        similarityMatrix[0][j] = similarity
+        
+        log.Printf("  %s: %.6f", storeName, similarity)
+        
+        // Verify the result matches the expected plaintext calculation
+        expectedSim := utils.DotProduct(queryCompressed, storeCompressed[j])
+        assert.InDelta(t, expectedSim, similarity, 1e-5,
+            "Cosine similarity mismatch for '%s': expected %.6f, got %.6f",
+            storeName, expectedSim, similarity)
+    }
+    
+    // Find and print the best match
+    bestMatch := ""
+    bestScore := -1.0
+    
+    for j, storeName := range store {
+        if decryptedBatch[j] != nil && decryptedBatch[j][0] > bestScore {
+            bestScore = decryptedBatch[j][0]
+            bestMatch = storeName
+        }
+    }
+    
+    log.Printf("\nBest match for '%s' (with compression): '%s' with similarity %.6f",
+        query, bestMatch, bestScore)
+        
+    // Compare with uncompressed results (optional)
+    log.Println("\nComparing compressed vs uncompressed results:")
+    log.Printf("%-15s | %-12s | %-15s | %-15s", "Store Name", "Original Sim", "Compressed Sim", "Difference")
+    log.Printf("%s", strings.Repeat("-", 65))
+    
+    utils.NormalizeVector(&queryVector) // Re-normalize the original query vector
+    for i, name := range store {
+        utils.NormalizeVector(&storeVectors[i]) // Re-normalize original store vectors
+        originalSim := utils.DotProduct(queryVector, storeVectors[i])
+        compressedSim := similarityMatrix[0][i]
+        diff := math.Abs(originalSim - compressedSim)
+        
+        log.Printf("%-15s | %-12.6f | %-15.6f | %-15.6f", 
+            name, originalSim, compressedSim, diff)
+    }
 }

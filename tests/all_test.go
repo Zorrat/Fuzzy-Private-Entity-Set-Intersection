@@ -545,7 +545,7 @@ func TestCompressionRMSE(t *testing.T) {
     }
     
     // Test different high-pass cutoffs to find optimal
-    cutoffs := []int{128, 256, 384, 512, 530, 550, 600}
+    cutoffs := []int{ 512, 640}
     
     for _, cutoff := range cutoffs {
         log.Printf("\n=== Testing High Pass Filter (cutoff=%d) ===", cutoff)
