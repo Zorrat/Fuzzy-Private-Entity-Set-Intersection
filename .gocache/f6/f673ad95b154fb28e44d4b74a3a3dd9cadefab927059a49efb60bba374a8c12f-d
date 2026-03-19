@@ -1,0 +1,4 @@
+=== RUN   TestCosineDistance
+--- PASS: TestCosineDistance (0.00s)
+PASS
+ok  	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/utils	0.568s

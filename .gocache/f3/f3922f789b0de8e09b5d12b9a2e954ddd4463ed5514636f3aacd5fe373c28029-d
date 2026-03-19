@@ -1,0 +1,12 @@
+./bridge.go
+./ckks.go
+./ckks_vector_ops.go
+./encoder.go
+./evaluator.go
+./example_parameters.go
+./linear_transformation.go
+./params.go
+./precision.go
+./scaling.go
+./test_utils.go
+./utils.go

@@ -31,3 +31,6 @@ async def create_item(item: Item):
         raise HTTPException(status_code=400, detail="Invalid input")
     result = [random() for value in item.data]
     return JSONResponse(content=dict(cosine_sims=result,query_enc=[ord(x) for x in item.query]))
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)

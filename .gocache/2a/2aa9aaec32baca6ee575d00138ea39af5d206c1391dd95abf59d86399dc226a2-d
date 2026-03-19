@@ -1,0 +1,5 @@
+# test log
+getenv PWD
+open /Users/rohan/Zorrat/HEEntityResolver/Fuzzy-Private-Entity-Set-Intersection/hem/global.json
+getenv PWD
+open /Users/rohan/Zorrat/HEEntityResolver/Fuzzy-Private-Entity-Set-Intersection/hem/global.json

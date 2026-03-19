@@ -1,0 +1,10 @@
+./bignum.go
+./chebyshev_approximation.go
+./complex.go
+./eval.go
+./float.go
+./int.go
+./interval.go
+./metadata.go
+./minimax_approximation.go
+./polynomial.go

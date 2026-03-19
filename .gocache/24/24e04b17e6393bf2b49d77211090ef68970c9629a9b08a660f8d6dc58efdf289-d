@@ -1,0 +1,12 @@
+=== RUN   TestBatchFFT
+--- PASS: TestBatchFFT (0.02s)
+=== RUN   TestLowPassFilter
+--- PASS: TestLowPassFilter (0.00s)
+=== RUN   TestHighPassFilter
+--- PASS: TestHighPassFilter (0.00s)
+=== RUN   TestBandPassFilter
+--- PASS: TestBandPassFilter (0.00s)
+=== RUN   TestBandStopFilter
+--- PASS: TestBandStopFilter (0.00s)
+PASS
+ok  	github.com/Zorrat/Fuzzy-Private-Entity-Set-Intersection.git/compression	0.451s
