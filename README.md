@@ -1,15 +1,55 @@
-# Fuzzy Private Entity Set Intersection
+<div align="center">
+  <img src="client/venndiagram.png" alt="Fuzzy Private Entity Set Intersection" width="120" />
+  <h1>Fuzzy Private Entity Set Intersection</h1>
+  <p><strong>Privacy-preserving fuzzy entity matching in Go using Lattigo CKKS</strong></p>
+  <p>Securely compare entity-name vectors without exposing the encrypted query during similarity evaluation.</p>
+  <p>
+    <a href="https://go.dev/">
+      <img alt="Go" src="https://img.shields.io/badge/Go-1.24%2B-00ADD8?logo=go&logoColor=white" />
+    </a>
+    <a href="https://github.com/tuneinsight/lattigo">
+      <img alt="Lattigo" src="https://img.shields.io/badge/Lattigo-v6-1F6FEB" />
+    </a>
+    <a href="LICENSE">
+      <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
+    </a>
+    <img alt="Status" src="https://img.shields.io/badge/Status-Research%20Prototype-orange" />
+  </p>
+  <p>
+    <a href="#quick-start">Quick Start</a> •
+    <a href="#run-the-examples">Examples</a> •
+    <a href="#run-the-demo-server">Demo Server</a> •
+    <a href="#testing">Testing</a>
+  </p>
+</div>
 
-Privacy-preserving fuzzy entity matching in Go using [Lattigo CKKS](https://github.com/tuneinsight/lattigo). This repository focuses on matching names and company-like entities without exposing raw vectors during similarity computation.
+> [!NOTE]
+> This repository is currently a research-style prototype for encrypted fuzzy entity resolution. The present implementation encrypts the query side and evaluates similarities against plaintext candidate vectors.
 
-The current codebase is best understood as a research-style prototype for encrypted entity resolution:
+## At A Glance
 
-- Text inputs are cleaned and normalized.
-- Names are converted into character n-gram TF-IDF vectors.
-- Vectors can optionally be compressed in the frequency domain.
-- Query vectors are encrypted with CKKS.
-- Cosine-style similarity is computed homomorphically as a dot product between encrypted and plaintext-normalized vectors.
-- Only the final similarity scores are decrypted.
+| Goal | Stack | Data Model | Output |
+| --- | --- | --- | --- |
+| Fuzzy entity matching with privacy-preserving computation | Go + Lattigo CKKS | Character n-gram TF-IDF vectors | Decrypted similarity scores |
+
+Key capabilities:
+
+- Clean and normalize noisy entity names.
+- Convert names into character n-gram TF-IDF vectors.
+- Optionally compress vectors in the frequency domain.
+- Encrypt query vectors with CKKS.
+- Compute homomorphic dot products as cosine-style similarity.
+- Decrypt only the final scores used for ranking and matching.
+
+```mermaid
+flowchart LR
+    A[Raw entity names] --> B[Normalization]
+    B --> C[TF-IDF vectorization]
+    C --> D[Optional FFT compression]
+    D --> E[CKKS encryption of query]
+    E --> F[Homomorphic dot product]
+    F --> G[Decrypted similarity scores]
+```
 
 ## What This Project Does
 
