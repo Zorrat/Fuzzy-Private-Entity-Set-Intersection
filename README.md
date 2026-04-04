@@ -1,6 +1,6 @@
 <div align="center">
   <img src="client/venndiagram.png" alt="Fuzzy Private Entity Set Intersection" width="120" />
-  <h1>Fuzzy Private Entity Set Intersection</h1>
+  <h1>Blind Match</h1>
   <p><strong>Privacy-preserving fuzzy entity matching in Go using Lattigo CKKS</strong></p>
   <p>Securely compare entity-name vectors without exposing the encrypted query during similarity evaluation.</p>
   <p>
